@@ -41,9 +41,12 @@ public class ConversonViewController
 		
 	}
 	
-	public void getListItem()
+	public String getListItem(int index)
 	{
-		
+		ObservableList<String> items = inputList.getItems();
+		String selectedItem = items.get(index);
+		return selectedItem;
 	}
+	
 
 }
