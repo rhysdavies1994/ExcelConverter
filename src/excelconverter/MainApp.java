@@ -1,5 +1,6 @@
 package excelconverter;
 
+import excelconverter.view.ConversionViewController;
 import java.io.File;
 import java.io.IOException;
 import javafx.application.Application;
@@ -33,6 +34,11 @@ public class MainApp extends Application
 		launch(args);
 	}
 
+	public Stage getPrimaryStage()
+	{
+		return primaryStage;
+	}
+	
 	@Override
 	public void start(Stage primaryStage)
 	{
@@ -79,6 +85,10 @@ public class MainApp extends Application
 
 			// Set person overview into the center of root layout.
 			rootLayout.setCenter(conversionView);
+			
+			// Give the controller access to the main app.
+			ConversionViewController controller = loader.getController();
+			controller.setMainApp(this);
 		}
 		catch (IOException e)
 		{
