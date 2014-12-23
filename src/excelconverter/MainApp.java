@@ -45,6 +45,8 @@ public class MainApp extends Application
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Excel Converter");
 
+		
+		
 		//Set Application Icon
 		//this.primaryStage.getIcons().add(new Image("file:Resources/Images/Address_Book.png"));
 		initRootLayout();
@@ -89,6 +91,9 @@ public class MainApp extends Application
 			// Give the controller access to the main app.
 			ConversionViewController controller = loader.getController();
 			controller.setMainApp(this);
+			
+			//Set up scene to allow dropping files in
+			controller.initializeDragAndDrop();
 		}
 		catch (IOException e)
 		{

@@ -7,10 +7,14 @@ import java.util.ListIterator;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
@@ -67,7 +71,43 @@ public class ConversionViewController
 		
 		outputNameField.setText("Data-Output");
 		
-		
+	}
+	
+	public void initializeDragAndDrop()
+	{
+		//Drag and Drop Files to add to input list
+		mainApp.getPrimaryStage().getScene().setOnDragOver
+		(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                Dragboard db = event.getDragboard();
+                if (db.hasFiles()) {
+                    event.acceptTransferModes(TransferMode.COPY);
+                } else {
+                    event.consume();
+                }
+            }
+        });
+        
+        // Dropping over surface
+        mainApp.getPrimaryStage().getScene().setOnDragDropped
+		(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                Dragboard db = event.getDragboard();
+                boolean success = false;
+                if (db.hasFiles()) {
+                    success = true;
+                    String filePath = null;
+                    for (File file:db.getFiles()) {
+						filePath = file.getAbsolutePath();
+                        addListItem(filePath);
+                    }
+                }
+                event.setDropCompleted(success);
+                event.consume();
+            }
+        });
 	}
 	
 	//Function called when browse button is clicked for input files
