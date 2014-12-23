@@ -8,8 +8,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 
@@ -23,7 +25,13 @@ public class ConversionViewController
 	private TextField outputNameField;
 	@FXML
 	private ListView<String> inputList;
+	@FXML
+	private ChoiceBox outputType;
+	
+	
+	private ObservableList<String> outputOptions;
 	private ObservableList<String> inputFiles;
+	
 	
 	 // Reference to the main application
     private MainApp mainApp;
@@ -43,6 +51,11 @@ public class ConversionViewController
 		//Initialise list for listview
 		inputFiles = FXCollections.observableArrayList();
 		
+		//Choice box initialized and selects first choice
+		outputOptions = FXCollections.observableArrayList("TXT","CSV","XLS","XLSX");
+		outputType.setItems(outputOptions);
+		outputType.getSelectionModel().selectFirst();
+		
 		//Update listView when an item is added or removed
 		inputFiles.addListener(new ListChangeListener() 
 		{
@@ -51,6 +64,9 @@ public class ConversionViewController
             inputList.setItems(inputFiles);
 			}
         });
+		
+		outputNameField.setText("Data-Output");
+		
 		
 	}
 	
@@ -88,7 +104,11 @@ public class ConversionViewController
 	@FXML
 	private void handleOutputBrowse()
 	{
+		DirectoryChooser directoryChooser = new DirectoryChooser();
 		
+		File selectedDirectory = directoryChooser.showDialog(mainApp.getPrimaryStage());
+		
+		outputFolderField.setText(selectedDirectory.getAbsolutePath());
 	}
 	
 	//Function for retreiving name of file at certain index in list
@@ -105,9 +125,12 @@ public class ConversionViewController
         inputFiles.add(item);
 	}
 
-	public void removeListItem(int index)
+	//Function for removing current selected item from list view
+	@FXML
+	public void removeSelectedItem()
 	{
-		
+		int index = inputList.getSelectionModel().getSelectedIndex();
+		inputFiles.remove(index);
 	}
  
        
