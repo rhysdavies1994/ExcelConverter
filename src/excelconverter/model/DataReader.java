@@ -7,8 +7,44 @@ package excelconverter.model;
  */
 public class DataReader
 {
+	private DataFile dataFile;
+	
+public DataReader()
+{
+	dataFile=new DataFile();
+	
+}
+	
+	
+public void readFileTXT(String inFileName)
+{
 
+}
 
+public void readFileCSV(String inFileName)
+{
+	
+}
+
+public void readFileXLS(String inFileName)
+{
+	
+}
+
+public void readFileXLSX(String inFileName)
+{
+	
+}
+
+public void clearDataFile()
+{
+	dataFile=null;
+}
+
+public DataFile getDataFile()
+{
+	return dataFile;
+}
 
 
 }

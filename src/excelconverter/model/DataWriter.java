@@ -7,4 +7,29 @@ package excelconverter.model;
 public class DataWriter
 {
 	
+	public DataWriter()
+	{
+		
+	}
+	
+	public void writeFileTXT(String outFileName, DataFile spreadsheet)
+	{
+		
+	}
+	
+	public void writeFileCSV(String outFileName, DataFile spreadsheet)
+	{
+		
+	}
+	
+	public void writeFileXLS(String outFileName, DataFile spreadsheet)
+	{
+		
+	}
+	
+	public void writeFileXLSX(String outFileName, DataFile spreadsheet)
+	{
+		
+	}
+	
 }
