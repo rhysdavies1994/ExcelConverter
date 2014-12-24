@@ -245,9 +245,9 @@ public class ConversionViewController
 					break;
 			case "CSV":dataWriter.writeFileCSV(outputFolderField.getText(), outputNameField.getText(), dataFile);
 				break;
-			case "XLS":dataWriter.writeFileXLS(outputFolderField.getText(), outputNameField.getText(), dataFile);
+			case "XLS"://dataWriter.writeFileXLS(outputFolderField.getText(), outputNameField.getText(), dataFile);
 				break;
-			case "XLSX":dataWriter.writeFileXLSX(outputFolderField.getText(), outputNameField.getText(), dataFile);
+			case "XLSX"://dataWriter.writeFileXLSX(outputFolderField.getText(), outputNameField.getText(), dataFile);
 				break;
 			default:
 				break;
