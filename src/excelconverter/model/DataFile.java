@@ -1,5 +1,8 @@
 package excelconverter.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /*
  Class: DataFile
  Description: Container class for representing a basic excel spreadsheet
@@ -8,24 +11,25 @@ public class DataFile
 {
 	//Class Fields
 	private String fileName;
-	private String[][] data;
+	private String[] headers;
+	private ArrayList<ArrayList<String>> data;
 	private String type;
 	private String delimiter;
 	
 	public DataFile()
 	{
-		fileName=null;
-		data=null;
-		type=null;
-		delimiter=null;
+		fileName=new String();
+		data=new ArrayList();
+		type=new String();
+		delimiter=new String();
 	}
 	
 	public DataFile(String inFileName)
 	{
 		fileName=inFileName;
-		data=null;
-		type=null;
-		delimiter=null;
+		data=new ArrayList();
+		type=new String();
+		delimiter=new String();
 	}
 
 	/**
@@ -47,7 +51,7 @@ public class DataFile
 	/**
 	 * @return the data
 	 */
-	public String[][] getData()
+	public ArrayList<ArrayList<String>> getData()
 	{
 		return data;
 	}
@@ -55,7 +59,7 @@ public class DataFile
 	/**
 	 * @param data the data to set
 	 */
-	public void setData(String[][] data)
+	public void setData(ArrayList<ArrayList<String>> data)
 	{
 		this.data = data;
 	}
@@ -91,6 +95,84 @@ public class DataFile
 	{
 		this.delimiter = delimiter;
 	}
+
+	/**
+	 * @return the headers
+	 */
+	public String[] getHeaders()
+	{
+		return headers;
+	}
+
+	/**
+	 * @param headers the headers to set
+	 */
+	public void setHeaders(String[] headers)
+	{
+		this.headers = headers;
+	}
 	
+	public void addRow(String[] row)
+	{
+		ArrayList<String> currentRow = new ArrayList<String>(Arrays.asList(row));
+		data.add(currentRow);
+	}
+	
+	public void addRow(ArrayList<String> row)
+	{
+		data.add(row);
+	}
+	
+	//Get list of strings (row) at certain index
+	public ArrayList<String> getRow(int rowIndex)
+	{
+		return data.get(rowIndex);
+	}
+	
+	//Get value of cell at row/column
+	public String getCell(int rowIndex, int columnIndex)
+	{
+		return data.get(rowIndex).get(columnIndex);
+	}
+	
+	//Function to set a row using an arraylist of strings
+	public void setRow(int rowIndex, ArrayList<String> row)
+	{
+		data.set(rowIndex, row);
+	}
+	
+	//Function to set a row using an array of strings
+	public void setRow(int rowIndex, String[] row)
+	{
+		ArrayList<String> currentRow = new ArrayList<String>(Arrays.asList(row));
+		data.set(rowIndex, currentRow);
+	}
+	
+	//Function to set a value of a cell in data file
+	public void setCell(int rowIndex, int columnIndex, String value)
+	{
+		data.get(rowIndex).set(columnIndex,value);
+	}
+	
+	public boolean hasData()
+	{
+		boolean dataExists=false;
+		
+		if(data.isEmpty())
+		{
+			dataExists=false;
+		}
+		else
+		{
+			dataExists=true;
+		}
+		
+		return dataExists;
+	}
+	
+	public int getRowCount()
+	{
+		return data.size();
+	}
 	
 }

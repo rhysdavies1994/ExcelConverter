@@ -1,6 +1,9 @@
 package excelconverter.view;
 
 import excelconverter.MainApp;
+import excelconverter.model.DataFile;
+import excelconverter.model.DataReader;
+import excelconverter.model.DataWriter;
 import java.io.File;
 import java.util.List;
 import java.util.ListIterator;
@@ -173,7 +176,28 @@ public class ConversionViewController
 		inputFiles.remove(index);
 	}
  
-       
+    @FXML
+	public void handleBegin()
+	{
+		ObservableList<String> items = inputList.getItems();
+		DataFile dataFile = new DataFile();
+		DataReader dataReader = new DataReader();
+		DataWriter dataWriter = new DataWriter();
+		
+		for(int i=0;i<items.size();i++)
+		{
+			String currentItem = items.get(i);
+			
+			//Check file type and read depending on type
+			dataReader.readFileTXT(currentItem);
+		}
+		
+		dataFile=dataReader.getDataFile();
+		
+		dataWriter.writeFileTXT("C:\\Users\\rhys\\Desktop", "OutputFile.txt", dataFile);
+		
+		
+	}
 	
 
 }

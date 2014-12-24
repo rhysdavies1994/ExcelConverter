@@ -40,7 +40,7 @@
                   <ChoiceBox fx:id="outputType" layoutX="10.0" layoutY="243.0" prefHeight="25.0" prefWidth="160.0" />
                </children>
             </AnchorPane>
-            <Button mnemonicParsing="false" prefHeight="46.0" prefWidth="273.0" text="Begin" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+            <Button mnemonicParsing="false" onAction="#handleBegin" prefHeight="46.0" prefWidth="273.0" text="Begin" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
          </children>
          <padding>
             <Insets right="20.0" />
