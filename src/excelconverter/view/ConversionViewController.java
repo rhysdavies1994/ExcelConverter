@@ -7,11 +7,14 @@ import excelconverter.model.DataWriter;
 import java.io.File;
 import java.util.List;
 import java.util.ListIterator;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -20,6 +23,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import org.controlsfx.dialog.Dialogs;
 
 
 public class ConversionViewController
@@ -34,6 +38,11 @@ public class ConversionViewController
 	private ListView<String> inputList;
 	@FXML
 	private ChoiceBox outputType;
+	
+	@FXML
+	private Button beginButton;
+	
+	private String outputTypeString;
 	
 	
 	private ObservableList<String> outputOptions;
@@ -62,6 +71,17 @@ public class ConversionViewController
 		outputOptions = FXCollections.observableArrayList("TXT","CSV","XLS","XLSX");
 		outputType.setItems(outputOptions);
 		outputType.getSelectionModel().selectFirst();
+		outputTypeString = outputOptions.get(outputType.getSelectionModel().getSelectedIndex());
+		
+		//Get value of output type when selection is changed
+		outputType.getSelectionModel().selectedIndexProperty().addListener(
+				new ChangeListener<Number>()
+					{
+						public void changed(ObservableValue ov, Number value, Number new_value)
+						{
+							outputTypeString=outputOptions.get(new_value.intValue());
+						}
+					});
 		
 		//Update listView when an item is added or removed
 		inputFiles.addListener(new ListChangeListener() 
@@ -72,7 +92,11 @@ public class ConversionViewController
 			}
         });
 		
+		//Set defaults for output textfields
 		outputNameField.setText("Data-Output");
+		outputFolderField.setText(System.getProperty("user.home") + "\\Desktop");
+		
+		
 		
 	}
 	
@@ -179,25 +203,73 @@ public class ConversionViewController
     @FXML
 	public void handleBegin()
 	{
+		beginButton.setDisable(true);
+		
 		ObservableList<String> items = inputList.getItems();
 		DataFile dataFile = new DataFile();
 		DataReader dataReader = new DataReader();
 		DataWriter dataWriter = new DataWriter();
 		
+		if(items.size() > 0)
+		{
+		//Read all input Files into a DataFile object
 		for(int i=0;i<items.size();i++)
 		{
 			String currentItem = items.get(i);
 			
+			String extension = currentItem.substring(currentItem.lastIndexOf(".") + 1, currentItem.length());
+				
 			//Check file type and read depending on type
-			dataReader.readFileTXT(currentItem);
+			switch(extension)
+			{
+				case "txt":dataReader.readFileTXT(currentItem);
+					break;
+				case "csv":dataReader.readFileCSV(currentItem);
+					break;
+				case "xls":dataReader.readFileXLS(currentItem);
+					break;
+				case "xlsx":dataReader.readFileXLSX(currentItem);
+					break;
+				default:
+					break;
+			}
 		}
 		
+		//Get Datafile object from reader
 		dataFile=dataReader.getDataFile();
 		
-		dataWriter.writeFileTXT("C:\\Users\\rhys\\Desktop", "OutputFile.txt", dataFile);
+		//Write Datafile object to output file, depending on output type selected
+		switch(outputTypeString)
+		{
+			case "TXT":dataWriter.writeFileTXT(outputFolderField.getText(), outputNameField.getText(), dataFile);
+					break;
+			case "CSV":dataWriter.writeFileCSV(outputFolderField.getText(), outputNameField.getText(), dataFile);
+				break;
+			case "XLS":dataWriter.writeFileXLS(outputFolderField.getText(), outputNameField.getText(), dataFile);
+				break;
+			case "XLSX":dataWriter.writeFileXLSX(outputFolderField.getText(), outputNameField.getText(), dataFile);
+				break;
+			default:
+				break;
+		}
+		}
+		else
+		{
+			Dialogs.create()
+                .title("No Input Files")
+                .masthead("There were no files selected")
+                .message("1. Click Add Files, or Drag 'n Drop into Input Files\n2. Click Begin")
+                .showError();
+		}
 		
+		beginButton.setDisable(false);
 		
 	}
 	
+	@FXML
+	public void handleRemoveAll()
+	{
+		inputFiles.clear();
+	}
 
 }
