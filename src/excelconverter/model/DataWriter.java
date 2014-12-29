@@ -156,60 +156,48 @@ public class DataWriter
 	{
 		Workbook wb = new HSSFWorkbook();
 		FileOutputStream fileOut;
-		
+
 		outFileName += ".xls";
-		
+
 		try
 		{
 			File outputFile = new File(directory, outFileName);
 			fileOut = new FileOutputStream(outputFile);
 			Sheet sheet = wb.createSheet("Sheet1");
 			CreationHelper createHelper = wb.getCreationHelper();
-			
+
 			// Create rows and cells. Rows are 0 based.
-			for(int currentRow=0; currentRow<spreadsheet.getRowCount();currentRow++)
+			for (int currentRow = 0; currentRow < spreadsheet.getRowCount(); currentRow++)
 			{
 				Row row = sheet.createRow(currentRow);
-				
+
 				ArrayList<String> rowList = spreadsheet.getRow(currentRow);
-				for(int currentCell=0; currentCell<rowList.size();currentCell++)
+				for (int currentCell = 0; currentCell < rowList.size(); currentCell++)
 				{
 					Cell cell = row.createCell(currentCell);
 					cell.setCellValue(rowList.get(currentCell));
-				
+
 				}
-				
-				
-				
+
 			}
-			
+
 			// Write the output to a file
 			wb.write(fileOut);
 			fileOut.close();
-			
+
 			Dialogs.create()
-							.title("Complete")
-							.masthead("Writing to File Complete")
-							.message("You can find the file at:\n" + outputFile.getPath())
-							.showInformation();
+					.title("Complete")
+					.masthead("Writing to File Complete")
+					.message("You can find the file at:\n" + outputFile.getPath())
+					.showInformation();
 		}
 		catch (FileNotFoundException ex)
 		{
 			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
-			Dialogs.create()
-					.title("Writing to File Error")
-					.masthead("The system cannot find the path specified")
-					.message("Please check output directory exists, if not, create it and try again")
-					.showError();
 		}
 		catch (IOException ex)
 		{
 			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
-			Dialogs.create()
-					.title("Writing to File Error")
-					.masthead("Error occurred while writing data to file")
-					.message("Please make sure file is in correct format")
-					.showError();
 		}
 
 	}
@@ -218,7 +206,7 @@ public class DataWriter
 	{
 		Workbook wb = new XSSFWorkbook();
 		FileOutputStream fileOut;
-		
+
 		outFileName += ".xlsx";
 		try
 		{
@@ -226,61 +214,69 @@ public class DataWriter
 			fileOut = new FileOutputStream(outputFile);
 			Sheet sheet = wb.createSheet("Sheet1");
 			CreationHelper createHelper = wb.getCreationHelper();
-			
+
 			// Create rows and cells. Rows are 0 based.
-			for(int currentRow=0; currentRow<spreadsheet.getRowCount();currentRow++)
+			for (int currentRow = 0; currentRow < spreadsheet.getRowCount(); currentRow++)
 			{
 				Row row = sheet.createRow(currentRow);
-				
+
 				ArrayList<String> rowList = spreadsheet.getRow(currentRow);
-				for(int currentCell=0; currentCell<rowList.size();currentCell++)
+				for (int currentCell = 0; currentCell < rowList.size(); currentCell++)
 				{
 					Cell cell = row.createCell(currentCell);
 					cell.setCellValue(rowList.get(currentCell));
 				}
-				
+
 			}
-			
+
 			// Write the output to a file
 			wb.write(fileOut);
 			fileOut.close();
-			
+
 			Dialogs.create()
-							.title("Complete")
-							.masthead("Writing to File Complete")
-							.message("You can find the file at:\n" + outputFile.getPath())
-							.showInformation();
+					.title("Complete")
+					.masthead("Writing to File Complete")
+					.message("You can find the file at:\n" + outputFile.getPath())
+					.showInformation();
 		}
 		catch (FileNotFoundException ex)
 		{
 			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
-			Dialogs.create()
-					.title("Writing to File Error")
-					.masthead("The system cannot find the path specified")
-					.message("Please check output directory exists, if not, create it and try again")
-					.showError();
+
 		}
 		catch (IOException ex)
 		{
 			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
-			Dialogs.create()
-					.title("Writing to File Error")
-					.masthead("Error occurred while writing data to file")
-					.message("Please make sure file is in correct format")
-					.showError();
+
 		}
-		
+
 	}
 
 	public boolean initialCheck(String directory, String outFileName)
 	{
 		boolean isValidFields = true;
 		String errorMessage = new String();
+		File outputFolder;
+		
+		FileOutputStream fileOut;
 
 		if (directory.isEmpty())
 		{
 			isValidFields = false;
 			errorMessage += "The output folder has not been chosen.\n";
+		}
+		else
+		{
+			outputFolder = new File(directory);
+			if(outputFolder.exists())
+			{
+				
+			}
+			else
+			{
+				isValidFields=false;
+				errorMessage += "The Chosen Directory does not exist, Please create it and try again.\n";
+			}
 		}
 
 		if (outFileName.isEmpty())
@@ -288,6 +284,7 @@ public class DataWriter
 			isValidFields = false;
 			errorMessage += "The file name for output has not been chosen.\n";
 		}
+
 
 		if (isValidFields == false)
 		{

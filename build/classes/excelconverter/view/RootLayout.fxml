@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="750.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="excelconverter.view.ConversionViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="750.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="excelconverter.view.RootLayoutController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -19,22 +19,10 @@
                      </accelerator></MenuItem>
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleInputBrowse" text="Add Files">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator></MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#handleRemoveAll" text="Delete All">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
-                     </accelerator>
-                  </MenuItem>
-            </items>
-          </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" onAction="#handleHelp" text="How To" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About" />
             </items>
           </Menu>
         </menus>

@@ -5,8 +5,13 @@ import excelconverter.model.DataFile;
 import excelconverter.model.DataReader;
 import excelconverter.model.DataWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -68,7 +73,7 @@ public class ConversionViewController
 	}
 
 	@FXML
-	private void initialize()
+	public void initialize()
 	{
 		//Initialise list for listview
 		inputFiles = FXCollections.observableArrayList();
@@ -155,7 +160,7 @@ public class ConversionViewController
 
 	//Function called when browse button is clicked for input files
 	@FXML
-	private void handleInputBrowse()
+	public void handleInputBrowse()
 	{
 		FileChooser fileChooser = new FileChooser();
 
@@ -184,7 +189,7 @@ public class ConversionViewController
 
 	//Function called when browse button is clicked for output
 	@FXML
-	private void handleOutputBrowse()
+	public void handleOutputBrowse()
 	{
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 
@@ -219,28 +224,33 @@ public class ConversionViewController
 	public void handleBegin()
 	{
 		beginButton.setDisable(true);
+		ObservableList<String> items = inputList.getItems();
+		
+		//Initialise Data Writer and Reader
+		DataReader dataReader = new DataReader();
+		DataWriter dataWriter = new DataWriter();
 
-		Service<Void> service = new Service<Void>()
+		//Check if output fields are not empty and file can be created at location
+		boolean canCreateFile=true;
+		canCreateFile = dataWriter.initialCheck(outputFolderField.getText(), outputNameField.getText());
+		
+		//If atleast 1 input item and can create file, process it
+		if (items.size() > 0 && canCreateFile==true)
 		{
-			@Override
-			protected Task<Void> createTask()
+			Service<Void> service = new Service<Void>()
 			{
-				return new Task<Void>()
+				@Override
+				protected Task<Void> createTask()
 				{
-					@Override
-					protected Void call()
-							throws InterruptedException
+					return new Task<Void>()
 					{
-
-						updateProgress(completedProgressItems, totalProgressItems);
-
-						ObservableList<String> items = inputList.getItems();
-						DataFile dataFile = new DataFile();
-						DataReader dataReader = new DataReader();
-						DataWriter dataWriter = new DataWriter();
-
-						if (items.size() > 0)
+						@Override
+						protected Void call()
+								throws InterruptedException
 						{
+
+							updateProgress(completedProgressItems, totalProgressItems);
+
 							updateMessage("Reading Files..");
 
 							totalProgressItems = items.size();
@@ -276,7 +286,7 @@ public class ConversionViewController
 							}
 
 							//Get Datafile object from reader
-							dataFile = dataReader.getDataFile();
+							DataFile dataFile = dataReader.getDataFile();
 
 							updateMessage("Writing Data to File");
 							//Write Datafile object to output file, depending on output type selected
@@ -297,32 +307,34 @@ public class ConversionViewController
 								default:
 									break;
 							}
-						}
-						else
-						{
-							Dialogs.create()
-									.title("No Input Files")
-									.masthead("There were no files selected")
-									.message("1. Click Add Files, or Drag 'n Drop into Input Files\n2. Click Begin")
-									.showError();
-						}
-						completedProgressItems++;
-						updateProgress(completedProgressItems, totalProgressItems);
 
-						return null;
-					}
-				};
-			}
-		};
-		Dialogs.create()
-				.owner(mainApp.getPrimaryStage())
-				.title("Progress Dialog")
-				.masthead("Combining Files")
-				.showWorkerProgress(service);
-		
-		
+							completedProgressItems++;
+							updateProgress(completedProgressItems, totalProgressItems);
 
-		service.start();
+							return null;
+						}
+					};
+				}
+			};
+			Dialogs.create()
+					.owner(mainApp.getPrimaryStage())
+					.title("Progress Dialog")
+					.masthead("Combining Files")
+					.showWorkerProgress(service);
+
+			service.start();
+		}
+		else if(canCreateFile && items.size()<=0)
+		{
+
+			Dialogs.create()
+					.title("No Input Files")
+					.masthead("There were no files selected")
+					.message("1. Click Add Files, or Drag 'n Drop into Input Files\n2. Click Begin")
+					.showError();
+
+		}
+
 		beginButton.setDisable(false);
 	}
 
@@ -332,7 +344,7 @@ public class ConversionViewController
 		inputFiles.clear();
 
 	}
-	
+
 	@FXML
 	public void handleClose()
 	{

@@ -1,6 +1,7 @@
 package excelconverter;
 
 import excelconverter.view.ConversionViewController;
+import excelconverter.view.RootLayoutController;
 import java.io.File;
 import java.io.IOException;
 import javafx.application.Application;
@@ -20,6 +21,8 @@ public class MainApp extends Application
 	//Class Fields
 	private Stage primaryStage;
 	private BorderPane rootLayout;
+	
+	
 
 	public MainApp()
 	{
@@ -68,6 +71,10 @@ public class MainApp extends Application
 			Scene scene = new Scene(rootLayout);
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			
+			//Set up root layout controller
+			RootLayoutController rootController = loader.getController();
+			rootController.setMainApp(this);
 		}
 		catch (IOException e)
 		{
@@ -94,6 +101,7 @@ public class MainApp extends Application
 			
 			//Set up scene to allow dropping files in
 			controller.initializeDragAndDrop();
+	
 		}
 		catch (IOException e)
 		{
