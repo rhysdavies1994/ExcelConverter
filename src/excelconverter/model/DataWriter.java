@@ -2,11 +2,21 @@ package excelconverter.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.controlsfx.dialog.Dialogs;
 
 /*
@@ -55,9 +65,6 @@ public class DataWriter
 
 					writer.close();
 
-					
-							
-					
 					Dialogs.create()
 							.title("Complete")
 							.masthead("Writing to File Complete")
@@ -68,6 +75,11 @@ public class DataWriter
 				catch (FileNotFoundException ex)
 				{
 					Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+					Dialogs.create()
+							.title("Writing to File Error")
+							.masthead("The system cannot find the path specified")
+							.message("Please check output directory exists, if not, create it and try again")
+							.showError();
 				}
 			}
 		}
@@ -111,9 +123,6 @@ public class DataWriter
 
 					writer.close();
 
-					
-							
-					
 					Dialogs.create()
 							.title("Complete")
 							.masthead("Writing to File Complete")
@@ -124,6 +133,16 @@ public class DataWriter
 				catch (FileNotFoundException ex)
 				{
 					Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+
+					Dialogs.create()
+							.title("Writing to File Error")
+							.masthead("The system cannot find the path specified")
+							.message("Please check output directory exists, if not, create it and try again")
+							.showError();
+				}
+				finally
+				{
+
 				}
 			}
 		}
@@ -135,12 +154,122 @@ public class DataWriter
 
 	public void writeFileXLS(String directory, String outFileName, DataFile spreadsheet)
 	{
+		Workbook wb = new HSSFWorkbook();
+		FileOutputStream fileOut;
+		
+		outFileName += ".xls";
+		
+		try
+		{
+			File outputFile = new File(directory, outFileName);
+			fileOut = new FileOutputStream(outputFile);
+			Sheet sheet = wb.createSheet("Sheet1");
+			CreationHelper createHelper = wb.getCreationHelper();
+			
+			// Create rows and cells. Rows are 0 based.
+			for(int currentRow=0; currentRow<spreadsheet.getRowCount();currentRow++)
+			{
+				Row row = sheet.createRow(currentRow);
+				
+				ArrayList<String> rowList = spreadsheet.getRow(currentRow);
+				for(int currentCell=0; currentCell<rowList.size();currentCell++)
+				{
+					Cell cell = row.createCell(currentCell);
+					cell.setCellValue(rowList.get(currentCell));
+				
+				}
+				
+				
+				
+			}
+			
+			// Write the output to a file
+			wb.write(fileOut);
+			fileOut.close();
+			
+			Dialogs.create()
+							.title("Complete")
+							.masthead("Writing to File Complete")
+							.message("You can find the file at:\n" + outputFile.getPath())
+							.showInformation();
+		}
+		catch (FileNotFoundException ex)
+		{
+			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			Dialogs.create()
+					.title("Writing to File Error")
+					.masthead("The system cannot find the path specified")
+					.message("Please check output directory exists, if not, create it and try again")
+					.showError();
+		}
+		catch (IOException ex)
+		{
+			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			Dialogs.create()
+					.title("Writing to File Error")
+					.masthead("Error occurred while writing data to file")
+					.message("Please make sure file is in correct format")
+					.showError();
+		}
 
 	}
 
 	public void writeFileXLSX(String directory, String outFileName, DataFile spreadsheet)
 	{
-
+		Workbook wb = new XSSFWorkbook();
+		FileOutputStream fileOut;
+		
+		outFileName += ".xlsx";
+		try
+		{
+			File outputFile = new File(directory, outFileName);
+			fileOut = new FileOutputStream(outputFile);
+			Sheet sheet = wb.createSheet("Sheet1");
+			CreationHelper createHelper = wb.getCreationHelper();
+			
+			// Create rows and cells. Rows are 0 based.
+			for(int currentRow=0; currentRow<spreadsheet.getRowCount();currentRow++)
+			{
+				Row row = sheet.createRow(currentRow);
+				
+				ArrayList<String> rowList = spreadsheet.getRow(currentRow);
+				for(int currentCell=0; currentCell<rowList.size();currentCell++)
+				{
+					Cell cell = row.createCell(currentCell);
+					cell.setCellValue(rowList.get(currentCell));
+				}
+				
+			}
+			
+			// Write the output to a file
+			wb.write(fileOut);
+			fileOut.close();
+			
+			Dialogs.create()
+							.title("Complete")
+							.masthead("Writing to File Complete")
+							.message("You can find the file at:\n" + outputFile.getPath())
+							.showInformation();
+		}
+		catch (FileNotFoundException ex)
+		{
+			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			Dialogs.create()
+					.title("Writing to File Error")
+					.masthead("The system cannot find the path specified")
+					.message("Please check output directory exists, if not, create it and try again")
+					.showError();
+		}
+		catch (IOException ex)
+		{
+			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			Dialogs.create()
+					.title("Writing to File Error")
+					.masthead("Error occurred while writing data to file")
+					.message("Please make sure file is in correct format")
+					.showError();
+		}
+		
 	}
 
 	public boolean initialCheck(String directory, String outFileName)
@@ -160,15 +289,15 @@ public class DataWriter
 			errorMessage += "The file name for output has not been chosen.\n";
 		}
 
-		if(isValidFields==false)
+		if (isValidFields == false)
 		{
 			Dialogs.create()
-							.title("Error")
-							.masthead("Problem with Output Path")
-							.message(errorMessage)
-							.showError();
+					.title("Error")
+					.masthead("Problem with Output Path")
+					.message(errorMessage)
+					.showError();
 		}
-		
+
 		return isValidFields;
 	}
 }

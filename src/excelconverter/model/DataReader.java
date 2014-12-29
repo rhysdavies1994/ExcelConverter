@@ -38,6 +38,7 @@ public class DataReader
 
 	}
 
+	//Function used to read a text(tab or bar delimited) file and append the DataFile
 	public void readFileTXT(String inFileName)
 	{
 
@@ -49,7 +50,7 @@ public class DataReader
 			{
 				//Read line and split into array of strings
 				String line = read.nextLine();
-				String delims = "[,|\t]";
+				String delims = "[|\t]";
 				String[] currentRow = line.split(delims);
 
 				dataFile.addRow(currentRow);
@@ -62,6 +63,7 @@ public class DataReader
 		}
 	}
 
+	//Function used to read a csv (comma delimited) file and append the DataFile
 	public void readFileCSV(String inFileName)
 	{
 		try
@@ -85,6 +87,7 @@ public class DataReader
 		}
 	}
 
+	//Function used to read a Excel xls file and append the DataFile
 	public void readFileXLS(String inFileName)
 	{
 		FileInputStream file = null;
@@ -101,68 +104,68 @@ public class DataReader
 
 				//Get sheets from the workbook
 				int numberSheets = workbook.getNumberOfSheets();
-				
-				for(int currentSheet=0;currentSheet<numberSheets;currentSheet++)
+
+				for (int currentSheet = 0; currentSheet < numberSheets; currentSheet++)
 				{
-				HSSFSheet sheet = workbook.getSheetAt(currentSheet);
-				int maxNumOfCells = sheet.getRow(0).getLastCellNum();
-				Iterator<Row> rowIterator = sheet.rowIterator();
+					HSSFSheet sheet = workbook.getSheetAt(currentSheet);
+					int maxNumOfCells = sheet.getRow(0).getLastCellNum();
+					Iterator<Row> rowIterator = sheet.rowIterator();
 
-				while (rowIterator.hasNext())
-				{
-					Row row = rowIterator.next();
-
-					//For each row, iterate through each columns
-					ArrayList<String> rowValues = new ArrayList();
-					Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = row.cellIterator();
-
-					String currentValue = new String();
-// Loop through cells
-					for (int cellCounter = 0; cellCounter < maxNumOfCells; cellCounter++)
+					while (rowIterator.hasNext())
 					{
+						Row row = rowIterator.next();
 
-						org.apache.poi.ss.usermodel.Cell cell;
+						//For each row, iterate through each columns
+						ArrayList<String> rowValues = new ArrayList();
+						Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = row.cellIterator();
 
-						if (row.getCell(cellCounter) == null)
+						String currentValue = new String();
+// Loop through cells
+						for (int cellCounter = 0; cellCounter < maxNumOfCells; cellCounter++)
 						{
-							cell = row.createCell(cellCounter);
+
+							org.apache.poi.ss.usermodel.Cell cell;
+
+							if (row.getCell(cellCounter) == null)
+							{
+								cell = row.createCell(cellCounter);
+							}
+							else
+							{
+								cell = row.getCell(cellCounter);
+							}
+
+							//Check Type of Cell Data
+							switch (cell.getCellType())
+							{
+								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
+									currentValue = String.valueOf(cell.getBooleanCellValue());
+									break;
+								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
+									currentValue = String.valueOf(cell.getNumericCellValue());
+
+									if (HSSFDateUtil.isCellDateFormatted(cell))
+									{
+										DataFormatter df = new DataFormatter();
+										currentValue = df.formatCellValue(cell);
+									}
+									break;
+								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
+									currentValue = cell.getStringCellValue();
+									break;
+								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK:
+									currentValue = "";
+									break;
+
+							}
+
+							rowValues.add(currentValue);
+
 						}
-						else
-						{
-							cell = row.getCell(cellCounter);
-						}
 
-						//Check Type of Cell Data
-						switch (cell.getCellType())
-						{
-							case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
-								currentValue = String.valueOf(cell.getBooleanCellValue());
-								break;
-							case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
-								currentValue = String.valueOf(cell.getNumericCellValue());
-
-								if (HSSFDateUtil.isCellDateFormatted(cell))
-								{
-									DataFormatter df = new DataFormatter();
-									currentValue = df.formatCellValue(cell);
-								}
-								break;
-							case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
-								currentValue = cell.getStringCellValue();
-								break;
-							case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK:
-								currentValue = "";
-								break;
-
-						}
-
-						rowValues.add(currentValue);
-
+						dataFile.addRow(rowValues);
 					}
-
-					dataFile.addRow(rowValues);
 				}
-			}
 			}
 			catch (IOException ex)
 			{
@@ -188,6 +191,7 @@ public class DataReader
 
 	}
 
+	//Function used to read a Excel xlsx file and append the DataFile
 	public void readFileXLSX(String inFileName)
 	{
 		FileInputStream file = null;
@@ -203,69 +207,69 @@ public class DataReader
 
 				//Get sheets from the workbook
 				int numberSheets = workbook.getNumberOfSheets();
-				
-				for(int currentSheet=0;currentSheet<numberSheets;currentSheet++)
+
+				for (int currentSheet = 0; currentSheet < numberSheets; currentSheet++)
 				{
-				XSSFSheet sheet = workbook.getSheetAt(currentSheet);
-				int maxNumOfCells = sheet.getRow(0).getLastCellNum();
-				Iterator<Row> rowIterator = sheet.rowIterator();
+					XSSFSheet sheet = workbook.getSheetAt(currentSheet);
+					int maxNumOfCells = sheet.getRow(0).getLastCellNum();
+					Iterator<Row> rowIterator = sheet.rowIterator();
 
-				while (rowIterator.hasNext())
-				{
-					Row row = rowIterator.next();
-
-					//For each row, iterate through each columns
-					ArrayList<String> rowValues = new ArrayList();
-					Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = row.cellIterator();
-
-					String currentValue = new String();
-
-					// Loop through cells
-					for (int cellCounter = 0; cellCounter < maxNumOfCells; cellCounter++)
+					while (rowIterator.hasNext())
 					{
+						Row row = rowIterator.next();
 
-						org.apache.poi.ss.usermodel.Cell cell;
+						//For each row, iterate through each columns
+						ArrayList<String> rowValues = new ArrayList();
+						Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = row.cellIterator();
 
-						if (row.getCell(cellCounter) == null)
+						String currentValue = new String();
+
+						// Loop through cells
+						for (int cellCounter = 0; cellCounter < maxNumOfCells; cellCounter++)
 						{
-							cell = row.createCell(cellCounter);
+
+							org.apache.poi.ss.usermodel.Cell cell;
+
+							if (row.getCell(cellCounter) == null)
+							{
+								cell = row.createCell(cellCounter);
+							}
+							else
+							{
+								cell = row.getCell(cellCounter);
+							}
+
+							//Check Type of Cell Data
+							switch (cell.getCellType())
+							{
+								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
+									currentValue = String.valueOf(cell.getBooleanCellValue());
+									break;
+								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
+									currentValue = String.valueOf(cell.getNumericCellValue());
+
+									if (HSSFDateUtil.isCellDateFormatted(cell))
+									{
+										DataFormatter df = new DataFormatter();
+										currentValue = df.formatCellValue(cell);
+									}
+									break;
+								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
+									currentValue = cell.getStringCellValue();
+									break;
+								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK:
+									currentValue = "";
+									break;
+
+							}
+
+							rowValues.add(currentValue);
+
 						}
-						else
-						{
-							cell = row.getCell(cellCounter);
-						}
 
-						//Check Type of Cell Data
-						switch (cell.getCellType())
-						{
-							case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
-								currentValue = String.valueOf(cell.getBooleanCellValue());
-								break;
-							case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
-								currentValue = String.valueOf(cell.getNumericCellValue());
-
-								if (HSSFDateUtil.isCellDateFormatted(cell))
-								{
-									DataFormatter df = new DataFormatter();
-									currentValue = df.formatCellValue(cell);
-								}
-								break;
-							case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
-								currentValue = cell.getStringCellValue();
-								break;
-							case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK:
-								currentValue = "";
-								break;
-
-						}
-
-						rowValues.add(currentValue);
-
+						dataFile.addRow(rowValues);
 					}
-
-					dataFile.addRow(rowValues);
 				}
-			}
 			}
 			catch (IOException ex)
 			{
