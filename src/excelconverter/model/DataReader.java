@@ -81,22 +81,6 @@ public class DataReader
 		}
 	}
 
-	public void testFileXLS(String inFileName)
-	{
-		try
-		{
-			Workbook wb = WorkbookFactory.create(new File(inFileName));
-		}
-		catch (IOException ex)
-		{
-			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		catch (InvalidFormatException ex)
-		{
-			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
 	//Function used to read a Excel xls file and append the DataFile Object
 	public void readFileXLS(String inFileName)
 	{
@@ -269,14 +253,14 @@ public class DataReader
 
 		}
 	}
-	
+
 	//Function to read through a XLS file using the SmartXLS library
 	public void sx_readFileXLS(String inFileName)
 	{
-		
+
 		WorkBook workBook;
 		workBook = new WorkBook();
-		
+
 		try
 		{
 			workBook.read(inFileName);
@@ -285,18 +269,18 @@ public class DataReader
 		{
 			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		
+
 		sx_processWorkBook(workBook);
-		
+
 	}
-	
+
 	//Function to read through a XLSX file using the SmartXLS library
 	public void sx_readFileXLSX(String inFileName)
 	{
-		
+
 		WorkBook workBook;
 		workBook = new WorkBook();
-		
+
 		try
 		{
 			workBook.readXLSX(inFileName);
@@ -305,18 +289,18 @@ public class DataReader
 		{
 			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		
+
 		sx_processWorkBook(workBook);
-		
+
 	}
-	
+
 	//Helper function for sx_readFileXLS and sx_readFileXLSX that handles 
 	//how a workbook is read through and fills out datafile object
 	public void sx_processWorkBook(WorkBook workBook)
 	{
 		try
 		{
-			String currentValue="";
+			String currentValue = "";
 
 			int numsheets = workBook.getNumSheets();
 			for (int sheetIndex = 0; sheetIndex < numsheets; sheetIndex++)
@@ -328,21 +312,22 @@ public class DataReader
 
 				//get the last row of this sheet.
 				int lastRow = workBook.getLastRow();
-				
-						
+				int lastColForRow = workBook.getLastColForRow(0);
 				
 				for (int rowIndex = 0; rowIndex < lastRow; rowIndex++)
 				{
 					ArrayList<String> rowValues = new ArrayList();
-					
+
 					//get the last column of this row.
-					int lastColForRow = workBook.getLastColForRow(rowIndex);
+					if(workBook.getLastColForRow(rowIndex)>lastColForRow)
+					{
+					lastColForRow = workBook.getLastColForRow(rowIndex);
+					}
 					for (int colIndex = 0; colIndex < lastColForRow; colIndex++)
 					{
 						double n;
 						String t, f;
 						int type = workBook.getType(rowIndex, colIndex);
-						
 						if (type < 0)
 						{
 							f = workBook.getFormula(rowIndex, colIndex);
@@ -350,19 +335,40 @@ public class DataReader
 						}
 						switch (type)
 						{
-							
+//							case WorkBook.TypeNumber:
+//								n = workBook.getNumber(rowIndex, colIndex);
+//								currentValue = String.valueOf(n);
+//								break;
+//
+//							case WorkBook.TypeText:
+//								t = workBook.getText(rowIndex, colIndex);
+//								currentValue = String.valueOf(t);
+//								break;
+//
+//							case WorkBook.TypeLogical:
+//							case WorkBook.TypeError:
+//								n = workBook.getNumber(rowIndex, colIndex);
+//								currentValue = String.valueOf(n);
+//								break;
+//
+//							case WorkBook.TypeEmpty:
+//								currentValue = "";
+//								break;
+
 							default:
-								currentValue=workBook.getText(rowIndex,colIndex);	
+								currentValue = workBook.getFormattedText(rowIndex, colIndex);;
 								break;
 						}
-					rowValues.add(currentValue);
+
+						rowValues.add(currentValue);
 					}
-					
+
 					//Add row to the data file
 					dataFile.addRow(rowValues);
 				}
 			}
 		}
+
 		catch (Exception ex)
 		{
 			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);

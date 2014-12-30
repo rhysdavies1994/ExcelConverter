@@ -13,7 +13,7 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Excel_Converter.jar" size="27123" download="eager" />
+    <jar href="Excel_Converter.jar" size="26954" download="eager" />
     <jar href="lib/SX.jar" size="2975183" download="eager" />
     <jar href="lib/commons-codec-1.9.jar" size="263965" download="eager" />
     <jar href="lib/commons-logging-1.1.3.jar" size="62050" download="eager" />
