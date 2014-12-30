@@ -29,73 +29,66 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class DataReader
 {
-
+	//Datafile main object to store all spreadsheet data
 	private DataFile dataFile;
 
+	//Constructor
 	public DataReader()
 	{
 		dataFile = new DataFile();
-
 	}
 
 	//Function used to read a text(tab or bar delimited) file and append the DataFile
 	public void readFileTXT(String inFileName)
 	{
-
-		try
-		{
-			Scanner read = new Scanner(new File(inFileName));
-
-			while (read.hasNextLine())
-			{
-				//Read line and split into array of strings
-				String line = read.nextLine();
-				String delims = "[|\t]";
-				String[] currentRow = line.split(delims);
-
-				dataFile.addRow(currentRow);
-			}
-			read.close();
-		}
-		catch (FileNotFoundException e)
-		{
-
-		}
+		readDelimitedFile(inFileName, "[|\t]");
 	}
 
 	//Function used to read a csv (comma delimited) file and append the DataFile
 	public void readFileCSV(String inFileName)
 	{
+		readDelimitedFile(inFileName,"[,]");
+	}
+	
+	//Function used to read any plain text file which is simply delimited
+	public void readDelimitedFile(String inFileName, String delimiters)
+	{
 		try
 		{
+			//Create scanner for reading through file
 			Scanner read = new Scanner(new File(inFileName));
 
 			while (read.hasNextLine())
 			{
-				//Read line and split into array of strings
+				//Read line and split into array of strings based on regex delimiters
 				String line = read.nextLine();
-				String delims = "[,]";
-				String[] currentRow = line.split(delims);
+				String[] currentRow = line.split(delimiters);
 
+				//Add the row to the datafile object
 				dataFile.addRow(currentRow);
 			}
+			
+			//Close Scanner
 			read.close();
 		}
-		catch (FileNotFoundException e)
+		catch (FileNotFoundException e) //If file does not exist
 		{
-
+			System.out.println("File not found");
 		}
 	}
 
-	//Function used to read a Excel xls file and append the DataFile
+	
+
+	//Function used to read a Excel xls file and append the DataFile Object
 	public void readFileXLS(String inFileName)
 	{
+		//Create Input Stream to read data from file
 		FileInputStream file = null;
 		try
 		{
-			System.out.println(inFileName);
 			file = new FileInputStream(new File(inFileName));
 
+			//Create HSSFWorkbook for handling XLS type Files
 			HSSFWorkbook workbook = null;
 			try
 			{
@@ -105,186 +98,75 @@ public class DataReader
 				//Get sheets from the workbook
 				int numberSheets = workbook.getNumberOfSheets();
 
+				//Iterate through each sheet
 				for (int currentSheet = 0; currentSheet < numberSheets; currentSheet++)
 				{
+					//Create a row iterator from the current sheet
 					HSSFSheet sheet = workbook.getSheetAt(currentSheet);
-					int maxNumOfCells = sheet.getRow(0).getLastCellNum();
 					Iterator<Row> rowIterator = sheet.rowIterator();
 
-					while (rowIterator.hasNext())
+					//If there is atleast one row, get amount of columns and process the rows
+					int maxNumOfCells = 0;
+					if (rowIterator.hasNext())
 					{
-						Row row = rowIterator.next();
-
-						//For each row, iterate through each columns
-						ArrayList<String> rowValues = new ArrayList();
-						Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = row.cellIterator();
-
-						String currentValue = new String();
-// Loop through cells
-						for (int cellCounter = 0; cellCounter < maxNumOfCells; cellCounter++)
-						{
-
-							org.apache.poi.ss.usermodel.Cell cell;
-
-							if (row.getCell(cellCounter) == null)
-							{
-								cell = row.createCell(cellCounter);
-							}
-							else
-							{
-								cell = row.getCell(cellCounter);
-							}
-
-							//Check Type of Cell Data
-							switch (cell.getCellType())
-							{
-								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
-									currentValue = String.valueOf(cell.getBooleanCellValue());
-									break;
-								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
-									currentValue = String.valueOf(cell.getNumericCellValue());
-
-									if (HSSFDateUtil.isCellDateFormatted(cell))
-									{
-										DataFormatter df = new DataFormatter();
-										currentValue = df.formatCellValue(cell);
-									}
-									break;
-								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
-									currentValue = cell.getStringCellValue();
-									break;
-								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK:
-									currentValue = "";
-									break;
-
-							}
-
-							rowValues.add(currentValue);
-
-						}
-
-						dataFile.addRow(rowValues);
+						maxNumOfCells = sheet.getRow(0).getLastCellNum();
+						processRowIterator(rowIterator, maxNumOfCells);
 					}
 				}
-			}
-			catch (IOException ex)
-			{
-				Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
-			}
 
-		}
-		catch (FileNotFoundException ex)
-		{
-			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		finally
-		{
-			try
-			{
+				//Close the input stream
 				file.close();
 			}
 			catch (IOException ex)
 			{
 				Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
+				System.out.println("Problem with writing to file!");
 			}
 		}
-
+		catch (FileNotFoundException ex)
+		{
+			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
+			System.out.println("File not found");
+		}
 	}
 
-	//Function used to read a Excel xlsx file and append the DataFile
+	//Function used to read a Excel xlsx file and append the DataFile Object
 	public void readFileXLSX(String inFileName)
 	{
+
+		//Create Input Stream to read data from file
 		FileInputStream file = null;
 		try
 		{
 			file = new FileInputStream(new File(inFileName));
 
+			//Create XSSFWorkbook for handling XLSX type Files
 			XSSFWorkbook workbook = null;
 			try
 			{
-				//Get the workbook instance for XLS file 
+				//Get the workbook instance for XLSX file 
 				workbook = new XSSFWorkbook(file);
 
 				//Get sheets from the workbook
 				int numberSheets = workbook.getNumberOfSheets();
 
+				//Iterate through each sheet in workbook
 				for (int currentSheet = 0; currentSheet < numberSheets; currentSheet++)
 				{
+					//Create a row iterator from the current sheet
 					XSSFSheet sheet = workbook.getSheetAt(currentSheet);
-					int maxNumOfCells = sheet.getRow(0).getLastCellNum();
 					Iterator<Row> rowIterator = sheet.rowIterator();
 
-					while (rowIterator.hasNext())
+					//If there is atleast one row, get amount of columns and process the rows
+					int maxNumOfCells = 0;
+					if (rowIterator.hasNext())
 					{
-						Row row = rowIterator.next();
-
-						//For each row, iterate through each columns
-						ArrayList<String> rowValues = new ArrayList();
-						Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = row.cellIterator();
-
-						String currentValue = new String();
-
-						// Loop through cells
-						for (int cellCounter = 0; cellCounter < maxNumOfCells; cellCounter++)
-						{
-
-							org.apache.poi.ss.usermodel.Cell cell;
-
-							if (row.getCell(cellCounter) == null)
-							{
-								cell = row.createCell(cellCounter);
-							}
-							else
-							{
-								cell = row.getCell(cellCounter);
-							}
-
-							//Check Type of Cell Data
-							switch (cell.getCellType())
-							{
-								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
-									currentValue = String.valueOf(cell.getBooleanCellValue());
-									break;
-								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
-									currentValue = String.valueOf(cell.getNumericCellValue());
-
-									if (HSSFDateUtil.isCellDateFormatted(cell))
-									{
-										DataFormatter df = new DataFormatter();
-										currentValue = df.formatCellValue(cell);
-									}
-									break;
-								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
-									currentValue = cell.getStringCellValue();
-									break;
-								case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK:
-									currentValue = "";
-									break;
-
-							}
-
-							rowValues.add(currentValue);
-
-						}
-
-						dataFile.addRow(rowValues);
+						maxNumOfCells = sheet.getRow(0).getLastCellNum();
+						processRowIterator(rowIterator, maxNumOfCells);
 					}
 				}
-			}
-			catch (IOException ex)
-			{
-				Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
-			}
 
-		}
-		catch (FileNotFoundException ex)
-		{
-			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		finally
-		{
-			try
-			{
+				//Close the input stream
 				file.close();
 			}
 			catch (IOException ex)
@@ -292,14 +174,87 @@ public class DataReader
 				Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
+		catch (FileNotFoundException ex)
+		{
+			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	//Helper function for reading XLS and XLSX files
+	public void processRowIterator(Iterator<Row> rowIterator, int maxNumOfCells)
+	{
 
+		//Iterate through rows while another exists
+		while (rowIterator.hasNext())
+		{
+			Row row = rowIterator.next();
+			ArrayList<String> rowValues = new ArrayList();
+			Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = row.cellIterator();
+			String currentValue = new String();
+			
+			//Iterate through every column cell
+			for (int cellCounter = 0; cellCounter < maxNumOfCells; cellCounter++)
+			{
+			//If the cell is null, create a blank cell, otherwise add the cell data
+				org.apache.poi.ss.usermodel.Cell cell;
+				
+				if (row.getCell(cellCounter) == null)
+				{
+					cell = row.createCell(cellCounter);
+				}
+				else
+				{
+					cell = row.getCell(cellCounter);
+				}
+
+				//Check type of cell and store value correctly as a string
+				switch (cell.getCellType())
+				{
+					//If the value is a boolean
+					case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
+						currentValue = String.valueOf(cell.getBooleanCellValue());
+						break;
+						
+					//If the value is a number
+					case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
+						currentValue = String.valueOf(cell.getNumericCellValue());
+
+						//If the value is a date
+						if (HSSFDateUtil.isCellDateFormatted(cell))
+						{
+							DataFormatter df = new DataFormatter();
+							currentValue = df.formatCellValue(cell);
+						}
+						break;
+						
+					//If the value is a string	
+					case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
+						currentValue = cell.getStringCellValue();
+						break;
+						
+					//If the value is a blank	
+					case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK:
+						currentValue = "";
+						break;
+				}
+
+				//Add cell value to row
+				rowValues.add(currentValue);
+
+			}
+
+			//Add row to the data file
+			dataFile.addRow(rowValues);
+		}
 	}
 
+	//Function used to clear all data from dataFile object
 	public void clearDataFile()
 	{
 		dataFile = null;
 	}
 
+	//Retrieve the datafile object
 	public DataFile getDataFile()
 	{
 		return dataFile;

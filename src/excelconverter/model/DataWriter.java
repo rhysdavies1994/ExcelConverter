@@ -60,6 +60,7 @@ public class DataWriter
 							writer.write("\t");
 						}
 						writer.write("\n");
+						
 
 					}
 
@@ -257,7 +258,7 @@ public class DataWriter
 		boolean isValidFields = true;
 		String errorMessage = new String();
 		File outputFolder;
-		
+
 		FileOutputStream fileOut;
 
 		if (directory.isEmpty())
@@ -268,13 +269,17 @@ public class DataWriter
 		else
 		{
 			outputFolder = new File(directory);
-			if(outputFolder.exists())
+			if (!outputFolder.isDirectory())
 			{
-				
+				outputFolder = outputFolder.getParentFile();
+			}
+			if (outputFolder.exists())
+			{
+
 			}
 			else
 			{
-				isValidFields=false;
+				isValidFields = false;
 				errorMessage += "The Chosen Directory does not exist, Please create it and try again.\n";
 			}
 		}
@@ -284,7 +289,6 @@ public class DataWriter
 			isValidFields = false;
 			errorMessage += "The file name for output has not been chosen.\n";
 		}
-
 
 		if (isValidFields == false)
 		{

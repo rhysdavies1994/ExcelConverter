@@ -4,6 +4,8 @@
     <title>Excel Converter</title>
     <vendor>Rhys</vendor>
     <description>null</description>
+    <icon href="resources/ExcelConverterApp.ico"  kind="splash"/>
+    <icon href="resources/ExcelConverterApp.ico" />
     <offline-allowed/>
   </information>
   <resources>
@@ -11,7 +13,7 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Excel_Converter.jar" size="25518" download="eager" />
+    <jar href="Excel_Converter.jar" size="24913" download="eager" />
     <jar href="lib/commons-codec-1.9.jar" size="263965" download="eager" />
     <jar href="lib/commons-logging-1.1.3.jar" size="62050" download="eager" />
     <jar href="lib/controlsfx-8.0.6_20.jar" size="856539" download="eager" />
@@ -24,6 +26,7 @@
     <jar href="lib/poi-src-3.8.jar" size="2474207" download="eager" />
     <jar href="lib/xmlbeans-2.6.0.jar" size="2730866" download="eager" />
   </resources>
+  <shortcut><desktop/></shortcut>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="Excel Converter" >
     <param name="requiredFXVersion" value="8.0+"/>
   </applet-desc>
