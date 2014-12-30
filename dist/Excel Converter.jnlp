@@ -13,7 +13,8 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Excel_Converter.jar" size="24913" download="eager" />
+    <jar href="Excel_Converter.jar" size="27123" download="eager" />
+    <jar href="lib/SX.jar" size="2975183" download="eager" />
     <jar href="lib/commons-codec-1.9.jar" size="263965" download="eager" />
     <jar href="lib/commons-logging-1.1.3.jar" size="62050" download="eager" />
     <jar href="lib/controlsfx-8.0.6_20.jar" size="856539" download="eager" />
@@ -23,7 +24,6 @@
     <jar href="lib/poi-excelant-3.11-20141221.jar" size="30374" download="eager" />
     <jar href="lib/poi-ooxml-3.11-20141221.jar" size="1210980" download="eager" />
     <jar href="lib/poi-ooxml-schemas-3.11-20141221.jar" size="5595829" download="eager" />
-    <jar href="lib/poi-src-3.8.jar" size="2474207" download="eager" />
     <jar href="lib/xmlbeans-2.6.0.jar" size="2730866" download="eager" />
   </resources>
   <shortcut><desktop/></shortcut>

@@ -1,5 +1,6 @@
 package excelconverter.model;
 
+import com.smartxls.WorkBook;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,10 +16,12 @@ import javafx.scene.control.Cell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -29,6 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class DataReader
 {
+
 	//Datafile main object to store all spreadsheet data
 	private DataFile dataFile;
 
@@ -47,9 +51,9 @@ public class DataReader
 	//Function used to read a csv (comma delimited) file and append the DataFile
 	public void readFileCSV(String inFileName)
 	{
-		readDelimitedFile(inFileName,"[,]");
+		readDelimitedFile(inFileName, "[,]");
 	}
-	
+
 	//Function used to read any plain text file which is simply delimited
 	public void readDelimitedFile(String inFileName, String delimiters)
 	{
@@ -67,7 +71,7 @@ public class DataReader
 				//Add the row to the datafile object
 				dataFile.addRow(currentRow);
 			}
-			
+
 			//Close Scanner
 			read.close();
 		}
@@ -77,7 +81,21 @@ public class DataReader
 		}
 	}
 
-	
+	public void testFileXLS(String inFileName)
+	{
+		try
+		{
+			Workbook wb = WorkbookFactory.create(new File(inFileName));
+		}
+		catch (IOException ex)
+		{
+			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		catch (InvalidFormatException ex)
+		{
+			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 
 	//Function used to read a Excel xls file and append the DataFile Object
 	public void readFileXLS(String inFileName)
@@ -90,6 +108,7 @@ public class DataReader
 
 			//Create HSSFWorkbook for handling XLS type Files
 			HSSFWorkbook workbook = null;
+
 			try
 			{
 				//Get the workbook instance for XLS file 
@@ -102,7 +121,7 @@ public class DataReader
 				for (int currentSheet = 0; currentSheet < numberSheets; currentSheet++)
 				{
 					//Create a row iterator from the current sheet
-					HSSFSheet sheet = workbook.getSheetAt(currentSheet);
+					Sheet sheet = workbook.getSheetAt(currentSheet);
 					Iterator<Row> rowIterator = sheet.rowIterator();
 
 					//If there is atleast one row, get amount of columns and process the rows
@@ -119,9 +138,11 @@ public class DataReader
 			}
 			catch (IOException ex)
 			{
+				//System.out.println("Problem with writing to file!");
 				Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
-				System.out.println("Problem with writing to file!");
+
 			}
+
 		}
 		catch (FileNotFoundException ex)
 		{
@@ -179,7 +200,7 @@ public class DataReader
 			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 	//Helper function for reading XLS and XLSX files
 	public void processRowIterator(Iterator<Row> rowIterator, int maxNumOfCells)
 	{
@@ -191,13 +212,13 @@ public class DataReader
 			ArrayList<String> rowValues = new ArrayList();
 			Iterator<org.apache.poi.ss.usermodel.Cell> cellIterator = row.cellIterator();
 			String currentValue = new String();
-			
+
 			//Iterate through every column cell
 			for (int cellCounter = 0; cellCounter < maxNumOfCells; cellCounter++)
 			{
-			//If the cell is null, create a blank cell, otherwise add the cell data
+				//If the cell is null, create a blank cell, otherwise add the cell data
 				org.apache.poi.ss.usermodel.Cell cell;
-				
+
 				if (row.getCell(cellCounter) == null)
 				{
 					cell = row.createCell(cellCounter);
@@ -214,7 +235,7 @@ public class DataReader
 					case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
 						currentValue = String.valueOf(cell.getBooleanCellValue());
 						break;
-						
+
 					//If the value is a number
 					case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
 						currentValue = String.valueOf(cell.getNumericCellValue());
@@ -226,12 +247,12 @@ public class DataReader
 							currentValue = df.formatCellValue(cell);
 						}
 						break;
-						
+
 					//If the value is a string	
 					case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
 						currentValue = cell.getStringCellValue();
 						break;
-						
+
 					//If the value is a blank	
 					case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK:
 						currentValue = "";
@@ -245,6 +266,106 @@ public class DataReader
 
 			//Add row to the data file
 			dataFile.addRow(rowValues);
+
+		}
+	}
+	
+	//Function to read through a XLS file using the SmartXLS library
+	public void sx_readFileXLS(String inFileName)
+	{
+		
+		WorkBook workBook;
+		workBook = new WorkBook();
+		
+		try
+		{
+			workBook.read(inFileName);
+		}
+		catch (Exception ex)
+		{
+			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		sx_processWorkBook(workBook);
+		
+	}
+	
+	//Function to read through a XLSX file using the SmartXLS library
+	public void sx_readFileXLSX(String inFileName)
+	{
+		
+		WorkBook workBook;
+		workBook = new WorkBook();
+		
+		try
+		{
+			workBook.readXLSX(inFileName);
+		}
+		catch (Exception ex)
+		{
+			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		sx_processWorkBook(workBook);
+		
+	}
+	
+	//Helper function for sx_readFileXLS and sx_readFileXLSX that handles 
+	//how a workbook is read through and fills out datafile object
+	public void sx_processWorkBook(WorkBook workBook)
+	{
+		try
+		{
+			String currentValue="";
+
+			int numsheets = workBook.getNumSheets();
+			for (int sheetIndex = 0; sheetIndex < numsheets; sheetIndex++)
+			{
+
+				//select sheet
+				workBook.setSheet(sheetIndex);
+				String sheetName = workBook.getSheetName(sheetIndex);
+
+				//get the last row of this sheet.
+				int lastRow = workBook.getLastRow();
+				
+						
+				
+				for (int rowIndex = 0; rowIndex < lastRow; rowIndex++)
+				{
+					ArrayList<String> rowValues = new ArrayList();
+					
+					//get the last column of this row.
+					int lastColForRow = workBook.getLastColForRow(rowIndex);
+					for (int colIndex = 0; colIndex < lastColForRow; colIndex++)
+					{
+						double n;
+						String t, f;
+						int type = workBook.getType(rowIndex, colIndex);
+						
+						if (type < 0)
+						{
+							f = workBook.getFormula(rowIndex, colIndex);
+							type -= 0;
+						}
+						switch (type)
+						{
+							
+							default:
+								currentValue=workBook.getText(rowIndex,colIndex);	
+								break;
+						}
+					rowValues.add(currentValue);
+					}
+					
+					//Add row to the data file
+					dataFile.addRow(rowValues);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 

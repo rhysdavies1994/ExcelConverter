@@ -66,21 +66,13 @@ public class DataWriter
 
 					writer.close();
 
-					Dialogs.create()
-							.title("Complete")
-							.masthead("Writing to File Complete")
-							.message("You can find the file at:\n" + outputFile.getPath())
-							.showInformation();
+					
 
 				}
 				catch (FileNotFoundException ex)
 				{
 					Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
-					Dialogs.create()
-							.title("Writing to File Error")
-							.masthead("The system cannot find the path specified")
-							.message("Please check output directory exists, if not, create it and try again")
-							.showError();
+					
 				}
 			}
 		}
@@ -124,22 +116,12 @@ public class DataWriter
 
 					writer.close();
 
-					Dialogs.create()
-							.title("Complete")
-							.masthead("Writing to File Complete")
-							.message("You can find the file at:\n" + outputFile.getPath())
-							.showInformation();
 
 				}
 				catch (FileNotFoundException ex)
 				{
 					Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
 
-					Dialogs.create()
-							.title("Writing to File Error")
-							.masthead("The system cannot find the path specified")
-							.message("Please check output directory exists, if not, create it and try again")
-							.showError();
 				}
 				finally
 				{
@@ -186,11 +168,6 @@ public class DataWriter
 			wb.write(fileOut);
 			fileOut.close();
 
-			Dialogs.create()
-					.title("Complete")
-					.masthead("Writing to File Complete")
-					.message("You can find the file at:\n" + outputFile.getPath())
-					.showInformation();
 		}
 		catch (FileNotFoundException ex)
 		{
@@ -234,11 +211,6 @@ public class DataWriter
 			wb.write(fileOut);
 			fileOut.close();
 
-			Dialogs.create()
-					.title("Complete")
-					.masthead("Writing to File Complete")
-					.message("You can find the file at:\n" + outputFile.getPath())
-					.showInformation();
 		}
 		catch (FileNotFoundException ex)
 		{

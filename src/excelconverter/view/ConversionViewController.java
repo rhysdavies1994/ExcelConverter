@@ -19,6 +19,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -224,18 +225,20 @@ public class ConversionViewController
 	public void handleBegin()
 	{
 		beginButton.setDisable(true);
+		completedProgressItems = 0;
+		totalProgressItems = 1;
 		ObservableList<String> items = inputList.getItems();
-		
+
 		//Initialise Data Writer and Reader
 		DataReader dataReader = new DataReader();
 		DataWriter dataWriter = new DataWriter();
 
 		//Check if output fields are not empty and file can be created at location
-		boolean canCreateFile=true;
+		boolean canCreateFile = true;
 		canCreateFile = dataWriter.initialCheck(outputFolderField.getText(), outputNameField.getText());
-		
+
 		//If atleast 1 input item and can create file, process it
-		if (items.size() > 0 && canCreateFile==true)
+		if (items.size() > 0 && canCreateFile == true)
 		{
 			Service<Void> service = new Service<Void>()
 			{
@@ -272,10 +275,10 @@ public class ConversionViewController
 										dataReader.readFileCSV(currentItem);
 										break;
 									case "xls":
-										dataReader.readFileXLS(currentItem);
+										dataReader.sx_readFileXLS(currentItem);
 										break;
 									case "xlsx":
-										dataReader.readFileXLSX(currentItem);
+										dataReader.sx_readFileXLSX(currentItem);
 										break;
 									default:
 										break;
@@ -322,9 +325,29 @@ public class ConversionViewController
 					.masthead("Combining Files")
 					.showWorkerProgress(service);
 
+			service.setOnSucceeded(new EventHandler<WorkerStateEvent>()
+			{
+				public void handle(WorkerStateEvent event)
+				{
+					Platform.runLater(new Runnable()
+					{
+						public void run()
+						{
+							Dialogs.create()
+									.owner(mainApp.getPrimaryStage())
+									.title("Completed")
+									.masthead("Files have successfully been combined")
+									.message("Your new data file can be found at:\n"+outputFolderField.getText())
+									.showInformation();
+						}
+					});
+				}
+			});
+
 			service.start();
+
 		}
-		else if(canCreateFile && items.size()<=0)
+		else if (canCreateFile && items.size() <= 0)
 		{
 
 			Dialogs.create()
