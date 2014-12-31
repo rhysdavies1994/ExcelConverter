@@ -48,7 +48,6 @@ public class MainApp extends Application
 		//this.primaryStage.getIcons().add(new Image("file:Resources/Images/Address_Book.png"));
 		initRootLayout();
 
-		showConversionView();
 	}
 
 	public void initRootLayout()
@@ -69,6 +68,9 @@ public class MainApp extends Application
 			//Set up root layout controller
 			RootLayoutController rootController = loader.getController();
 			rootController.setMainApp(this);
+			rootController.setRootLayout(rootLayout);
+			
+			rootController.showConversionView();
 		}
 		catch (IOException e)
 		{
@@ -77,30 +79,6 @@ public class MainApp extends Application
 
 	}
 
-	public void showConversionView()
-	{
-		try
-		{
-			// Load conversion view into root panel.
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/ConversionView.fxml"));
-			AnchorPane conversionView = (AnchorPane) loader.load();
-
-			// Set person overview into the center of root layout.
-			rootLayout.setCenter(conversionView);
-
-			// Give the controller access to the main app.
-			ConversionViewController controller = loader.getController();
-			controller.setMainApp(this);
-
-			//Set up scene to allow dropping files in
-			controller.initializeDragAndDrop();
-
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
+	
 
 }

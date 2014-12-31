@@ -19,6 +19,12 @@
                      </accelerator></MenuItem>
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Switch Program">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#showConversionView" text="Excel Tools" />
+                  <MenuItem mnemonicParsing="false" onAction="#showPDFToolsView" text="PDF Tools" />
+               </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#handleHelp" text="How To" />

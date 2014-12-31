@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="750.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="excelconverter.view.PDFToolsViewController">
+   <children>
+      <GridPane hgap="10.0" vgap="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="ALWAYS" maxWidth="340.0" minWidth="10.0" percentWidth="60.0" prefWidth="328.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="245.0" minWidth="10.0" prefWidth="172.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="173.0" minHeight="10.0" prefHeight="29.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="421.0" minHeight="10.0" percentHeight="90.0" prefHeight="421.0" vgrow="ALWAYS" />
+        </rowConstraints>
+         <children>
+            <VBox spacing="20.0" GridPane.rowIndex="1">
+               <children>
+                  <ListView fx:id="inputList" layoutX="27.0" layoutY="54.0" prefHeight="285.0" prefWidth="266.0" VBox.vgrow="ALWAYS" />
+                  <HBox alignment="CENTER" layoutX="27.0" layoutY="353.0" spacing="10.0">
+                     <children>
+                        <Button layoutX="27.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleInputBrowse" text="Add Files" />
+                        <Button alignment="CENTER" layoutX="153.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleInputBrowse" text="Remove" />
+                        <Button alignment="CENTER_RIGHT" layoutX="281.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleInputBrowse" text="Remove All" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <Label alignment="CENTER" text="PDF Tools" GridPane.halignment="CENTER" />
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>
