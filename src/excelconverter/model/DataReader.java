@@ -257,10 +257,11 @@ public class DataReader
 	//Function to read through a XLS file using the SmartXLS library
 	public void sx_readFileXLS(String inFileName)
 	{
-
+		//Create SmartXLS WorkBook
 		WorkBook workBook;
 		workBook = new WorkBook();
 
+		//Read XLS file passed by filename into workbook
 		try
 		{
 			workBook.read(inFileName);
@@ -270,6 +271,7 @@ public class DataReader
 			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
+		//Process Workbook and turn it into a DataFile Object for writing
 		sx_processWorkBook(workBook);
 
 	}
@@ -277,10 +279,11 @@ public class DataReader
 	//Function to read through a XLSX file using the SmartXLS library
 	public void sx_readFileXLSX(String inFileName)
 	{
-
+		//Create SmartXLS WorkBook
 		WorkBook workBook;
 		workBook = new WorkBook();
 
+		//Read XLSX file passed by filename into workbook
 		try
 		{
 			workBook.readXLSX(inFileName);
@@ -290,6 +293,7 @@ public class DataReader
 			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
+		//Process Workbook and turn it into a DataFile Object for writing
 		sx_processWorkBook(workBook);
 
 	}
@@ -300,66 +304,40 @@ public class DataReader
 	{
 		try
 		{
+			//Create string for storing current cell value in workbook
 			String currentValue = "";
 
+			//Iterate through each sheet
 			int numsheets = workBook.getNumSheets();
 			for (int sheetIndex = 0; sheetIndex < numsheets; sheetIndex++)
 			{
-
-				//select sheet
+				//Select Sheet
 				workBook.setSheet(sheetIndex);
 				String sheetName = workBook.getSheetName(sheetIndex);
 
-				//get the last row of this sheet.
+				//Find the amount of rows and columns for this sheet
 				int lastRow = workBook.getLastRow();
 				int lastColForRow = workBook.getLastColForRow(0);
-				
-				for (int rowIndex = 0; rowIndex < lastRow; rowIndex++)
+
+				//Iterate through rows
+				for (int rowIndex = 0; rowIndex <= lastRow; rowIndex++)
 				{
+					//Create List of Strings to store row
 					ArrayList<String> rowValues = new ArrayList();
 
-					//get the last column of this row.
-					if(workBook.getLastColForRow(rowIndex)>lastColForRow)
+					//If this is a longer row than usual change length of columns
+					if (workBook.getLastColForRow(rowIndex) > lastColForRow)
 					{
-					lastColForRow = workBook.getLastColForRow(rowIndex);
+						lastColForRow = workBook.getLastColForRow(rowIndex);
 					}
-					for (int colIndex = 0; colIndex < lastColForRow; colIndex++)
+
+					//Iterate through columns
+					for (int colIndex = 0; colIndex <= lastColForRow; colIndex++)
 					{
-						double n;
-						String t, f;
-						int type = workBook.getType(rowIndex, colIndex);
-						if (type < 0)
-						{
-							f = workBook.getFormula(rowIndex, colIndex);
-							type -= 0;
-						}
-						switch (type)
-						{
-//							case WorkBook.TypeNumber:
-//								n = workBook.getNumber(rowIndex, colIndex);
-//								currentValue = String.valueOf(n);
-//								break;
-//
-//							case WorkBook.TypeText:
-//								t = workBook.getText(rowIndex, colIndex);
-//								currentValue = String.valueOf(t);
-//								break;
-//
-//							case WorkBook.TypeLogical:
-//							case WorkBook.TypeError:
-//								n = workBook.getNumber(rowIndex, colIndex);
-//								currentValue = String.valueOf(n);
-//								break;
-//
-//							case WorkBook.TypeEmpty:
-//								currentValue = "";
-//								break;
-
-							default:
-								currentValue = workBook.getFormattedText(rowIndex, colIndex);;
-								break;
-						}
-
+						//Get String value for the cell at current location
+						currentValue = workBook.getFormattedText(rowIndex, colIndex);
+						
+						//Add this value to the row
 						rowValues.add(currentValue);
 					}
 
@@ -373,6 +351,56 @@ public class DataReader
 		{
 			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+
+	public String sx_getCellValueBasedOnType(WorkBook workBook, int rowIndex, int colIndex) throws Exception
+	{
+		//Local variables
+		double n;
+		String t, f;
+		String currentValue = "";
+
+		//Determine type
+		int type = workBook.getType(rowIndex, colIndex);
+		//If formula
+		if (type < 0)
+		{
+			f = workBook.getFormula(rowIndex, colIndex);
+			currentValue = f;
+		}
+		switch (type)
+		{
+			//If cell is a Number
+			case WorkBook.TypeNumber:
+				n = workBook.getNumber(rowIndex, colIndex);
+				currentValue = String.valueOf(n);
+				break;
+
+			//If cell is Text
+			case WorkBook.TypeText:
+				t = workBook.getText(rowIndex, colIndex);
+				currentValue = String.valueOf(t);
+				break;
+
+			//If Logical or Error
+			case WorkBook.TypeLogical:
+			case WorkBook.TypeError:
+				n = workBook.getNumber(rowIndex, colIndex);
+				currentValue = String.valueOf(n);
+				break;
+
+			//If cell is blank
+			case WorkBook.TypeEmpty:
+				currentValue = "";
+				break;
+
+			//Otherwise get basic string
+			default:
+				currentValue = workBook.getFormattedText(rowIndex, colIndex);
+				break;
+		}
+
+		return currentValue;
 	}
 
 	//Function used to clear all data from dataFile object

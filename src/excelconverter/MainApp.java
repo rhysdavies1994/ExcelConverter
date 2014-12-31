@@ -21,14 +21,10 @@ public class MainApp extends Application
 	//Class Fields
 	private Stage primaryStage;
 	private BorderPane rootLayout;
-	
-	
 
 	public MainApp()
 	{
-		
-		
-		
+
 	}
 
 	//Main Function - ran at start
@@ -41,15 +37,13 @@ public class MainApp extends Application
 	{
 		return primaryStage;
 	}
-	
+
 	@Override
 	public void start(Stage primaryStage)
 	{
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Excel Converter");
 
-		
-		
 		//Set Application Icon
 		//this.primaryStage.getIcons().add(new Image("file:Resources/Images/Address_Book.png"));
 		initRootLayout();
@@ -71,7 +65,7 @@ public class MainApp extends Application
 			Scene scene = new Scene(rootLayout);
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			
+
 			//Set up root layout controller
 			RootLayoutController rootController = loader.getController();
 			rootController.setMainApp(this);
@@ -94,14 +88,14 @@ public class MainApp extends Application
 
 			// Set person overview into the center of root layout.
 			rootLayout.setCenter(conversionView);
-			
+
 			// Give the controller access to the main app.
 			ConversionViewController controller = loader.getController();
 			controller.setMainApp(this);
-			
+
 			//Set up scene to allow dropping files in
 			controller.initializeDragAndDrop();
-	
+
 		}
 		catch (IOException e)
 		{

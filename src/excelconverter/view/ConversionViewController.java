@@ -163,28 +163,35 @@ public class ConversionViewController
 	@FXML
 	public void handleInputBrowse()
 	{
-		FileChooser fileChooser = new FileChooser();
-
-		// Set extension filter
-		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
-				"Data files", "*.txt", "*.csv", "*.xls", "*.xlsx");
-		fileChooser.getExtensionFilters().add(extFilter);
-
-		//Select multiple files for import
-		List<File> files = fileChooser.showOpenMultipleDialog(mainApp.getPrimaryStage());
-
-		for (ListIterator<File> iter = files.listIterator(); iter.hasNext();)
+		try
 		{
-			File currentFile = iter.next();
+			FileChooser fileChooser = new FileChooser();
 
-			addListItem(currentFile.getPath());
+			// Set extension filter
+			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
+					"Data files", "*.txt", "*.csv", "*.xls", "*.xlsx");
+			fileChooser.getExtensionFilters().add(extFilter);
+
+			//Select multiple files for import
+			List<File> files = fileChooser.showOpenMultipleDialog(mainApp.getPrimaryStage());
+
+			for (ListIterator<File> iter = files.listIterator(); iter.hasNext();)
+			{
+				File currentFile = iter.next();
+
+				addListItem(currentFile.getPath());
 
 			// 1 - can call methods of element
-			// 2 - can use iter.remove() to remove the current element from the list
-			// 3 - can use iter.add(...) to insert a new element into the list
-			//     between element and iter->next()
-			// 4 - can use iter.set(...) to replace the current element
-			// ...
+				// 2 - can use iter.remove() to remove the current element from the list
+				// 3 - can use iter.add(...) to insert a new element into the list
+				//     between element and iter->next()
+				// 4 - can use iter.set(...) to replace the current element
+				// ...
+			}
+		}
+		catch (NullPointerException ex)
+		{
+			System.out.println("No files added");
 		}
 	}
 
@@ -337,7 +344,7 @@ public class ConversionViewController
 									.owner(mainApp.getPrimaryStage())
 									.title("Completed")
 									.masthead("Files have successfully been combined")
-									.message("Your new data file can be found at:\n"+outputFolderField.getText())
+									.message("Your new data file can be found at:\n" + outputFolderField.getText())
 									.showInformation();
 						}
 					});
