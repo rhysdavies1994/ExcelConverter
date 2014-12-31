@@ -184,7 +184,7 @@ public class DataReader
 			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-
+	
 	//Helper function for reading XLS and XLSX files
 	public void processRowIterator(Iterator<Row> rowIterator, int maxNumOfCells)
 	{
@@ -254,6 +254,50 @@ public class DataReader
 		}
 	}
 
+	//Function to read through a TXT(Tab Delimited) file using the SmartXLS library
+	public void sx_readFileCSV(String inFileName)
+	{
+		//Create SmartXLS WorkBook
+		WorkBook workBook;
+		workBook = new WorkBook();
+
+		//Read XLS file passed by filename into workbook
+		try
+		{
+			workBook.read(inFileName);
+		}
+		catch (Exception ex)
+		{
+			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
+		}
+
+		//Process Workbook and turn it into a DataFile Object for writing
+		sx_processWorkBook(workBook);
+		
+		
+	}
+	
+	//Function to read through a CSV(Comma Delimited) file using the SmartXLS library
+	public void sx_readFileTXT(String inFileName)
+	{
+		//Create SmartXLS WorkBook
+		WorkBook workBook;
+		workBook = new WorkBook();
+
+		//Read XLS file passed by filename into workbook
+		try
+		{
+			workBook.read(inFileName);
+		}
+		catch (Exception ex)
+		{
+			Logger.getLogger(DataReader.class.getName()).log(Level.SEVERE, null, ex);
+		}
+
+		//Process Workbook and turn it into a DataFile Object for writing
+		sx_processWorkBook(workBook);
+	}
+	
 	//Function to read through a XLS file using the SmartXLS library
 	public void sx_readFileXLS(String inFileName)
 	{

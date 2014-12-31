@@ -11,7 +11,7 @@ public class DataFile
 {
 	//Class Fields
 	private String fileName;
-	private String[] headers;
+	private ArrayList<ArrayList<String>> headers;
 	private ArrayList<ArrayList<String>> data;
 	private String type;
 	private String delimiter;
@@ -19,6 +19,7 @@ public class DataFile
 	public DataFile()
 	{
 		fileName=new String();
+		headers = new ArrayList();
 		data=new ArrayList();
 		type=new String();
 		delimiter=new String();
@@ -27,6 +28,7 @@ public class DataFile
 	public DataFile(String inFileName)
 	{
 		fileName=inFileName;
+		headers = new ArrayList();
 		data=new ArrayList();
 		type=new String();
 		delimiter=new String();
@@ -95,22 +97,6 @@ public class DataFile
 	{
 		this.delimiter = delimiter;
 	}
-
-	/**
-	 * @return the headers
-	 */
-	public String[] getHeaders()
-	{
-		return headers;
-	}
-
-	/**
-	 * @param headers the headers to set
-	 */
-	public void setHeaders(String[] headers)
-	{
-		this.headers = headers;
-	}
 	
 	public void addRow(String[] row)
 	{
@@ -173,6 +159,22 @@ public class DataFile
 	public int getRowCount()
 	{
 		return data.size();
+	}
+
+	/**
+	 * @return the headers
+	 */
+	public ArrayList<ArrayList<String>> getHeaders()
+	{
+		return headers;
+	}
+
+	/**
+	 * @param headers the headers to set
+	 */
+	public void setHeaders(ArrayList<ArrayList<String>> headers)
+	{
+		this.headers = headers;
 	}
 	
 }
