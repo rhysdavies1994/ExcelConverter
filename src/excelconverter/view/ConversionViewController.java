@@ -276,10 +276,10 @@ public class ConversionViewController
 								switch (extension)
 								{
 									case "txt":
-										dataReader.readFileTXT(currentItem);
+										dataReader.sx_readFileTXT(currentItem);
 										break;
 									case "csv":
-										dataReader.readFileCSV(currentItem);
+										dataReader.sx_readFileCSV(currentItem);
 										break;
 									case "xls":
 										dataReader.sx_readFileXLS(currentItem);
@@ -309,10 +309,10 @@ public class ConversionViewController
 									dataWriter.writeFileCSV(outputFolderField.getText(), outputNameField.getText(), dataFile);
 									break;
 								case "XLS":
-									dataWriter.writeFileXLS(outputFolderField.getText(), outputNameField.getText(), dataFile);
+									dataWriter.sx_writeFileXLS(outputFolderField.getText(), outputNameField.getText(), dataFile);
 									break;
 								case "XLSX":
-									dataWriter.writeFileXLSX(outputFolderField.getText(), outputNameField.getText(), dataFile);
+									dataWriter.sx_writeFileXLSX(outputFolderField.getText(), outputNameField.getText(), dataFile);
 									break;
 								default:
 									break;

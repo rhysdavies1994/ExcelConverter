@@ -1,5 +1,6 @@
 package excelconverter.model;
 
+import com.smartxls.WorkBook;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -41,7 +42,7 @@ public class DataWriter
 			//Append .txt extension to filename
 			outFileName += ".txt";
 
-			writeDelimitedFile(directory, outFileName, spreadsheet, ",");
+			writeDelimitedFile(directory, outFileName, spreadsheet, "\t");
 		}
 		else
 		{
@@ -100,7 +101,7 @@ public class DataWriter
 					}
 
 					//Add new line character to end of row
-					writer.write("\n");
+					writer.write("\r\n");
 				}
 
 				//Once finished writing, close file
@@ -117,58 +118,66 @@ public class DataWriter
 	//Function for writing a DataFile object to a Excel XLS File
 	public void writeFileXLS(String directory, String outFileName, DataFile spreadsheet)
 	{
-		//Create XLS type workbook
-		Workbook wb = new HSSFWorkbook();
-		FileOutputStream fileOut;
-
-		//Make sure file extension is .xls
-		outFileName += ".xls";
-
-		try
+		//If file can be created
+		if (initialCheck(directory, outFileName) == true)
 		{
-			//Create output File to write to
-			File outputFile = new File(directory, outFileName);
-			
-			//Create output Stream to do the writing
-			fileOut = new FileOutputStream(outputFile);
-			
-			//Create new sheet in workbook
-			Sheet sheet = wb.createSheet("Sheet1");
-			CreationHelper createHelper = wb.getCreationHelper();
+			//Create XLS type workbook
+			Workbook wb = new HSSFWorkbook();
+			FileOutputStream fileOut;
 
-			//Iterate through rows
-			for (int currentRow = 0; currentRow < spreadsheet.getRowCount(); currentRow++)
+			//Make sure file extension is .xls
+			outFileName += ".xls";
+
+			try
 			{
-				//Create a row in workbook
-				Row row = sheet.createRow(currentRow);
+				//Create output File to write to
+				File outputFile = new File(directory, outFileName);
 
-				//Get Row from DataFile
-				ArrayList<String> rowList = spreadsheet.getRow(currentRow);
-				
-				//Iterate through cells
-				for (int currentCell = 0; currentCell < rowList.size(); currentCell++)
+				//Create output Stream to do the writing
+				fileOut = new FileOutputStream(outputFile);
+
+				//Create new sheet in workbook
+				Sheet sheet = wb.createSheet("Sheet1");
+				CreationHelper createHelper = wb.getCreationHelper();
+
+				//Iterate through rows
+				for (int currentRow = 0; currentRow < spreadsheet.getRowCount(); currentRow++)
 				{
-					//Create cell in workbook
-					Cell cell = row.createCell(currentCell);
-					
-					//Write cell from datafile to workbook
-					cell.setCellValue(rowList.get(currentCell));
-				}
-			}
+					//Create a row in workbook
+					Row row = sheet.createRow(currentRow);
 
-			// Write the output to a file
-			wb.write(fileOut);
-			
-			//Close File
-			fileOut.close();
+					//Get Row from DataFile
+					ArrayList<String> rowList = spreadsheet.getRow(currentRow);
+
+					//Iterate through cells
+					for (int currentCell = 0; currentCell < rowList.size(); currentCell++)
+					{
+						//Create cell in workbook
+						Cell cell = row.createCell(currentCell);
+
+						//Write cell from datafile to workbook
+						cell.setCellValue(rowList.get(currentCell));
+					}
+				}
+
+				// Write the output to a file
+				wb.write(fileOut);
+
+				//Close File
+				fileOut.close();
+			}
+			catch (FileNotFoundException ex)
+			{
+				Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			catch (IOException ex)
+			{
+				Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
-		catch (FileNotFoundException ex)
+		else
 		{
-			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		catch (IOException ex)
-		{
-			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+
 		}
 
 	}
@@ -176,61 +185,214 @@ public class DataWriter
 	//Function for writing a DataFile object to a Excel XLSX File
 	public void writeFileXLSX(String directory, String outFileName, DataFile spreadsheet)
 	{
-		//Create XLSX Style workbook
-		Workbook wb = new XSSFWorkbook();
-		FileOutputStream fileOut;
-
-		//Make sure file extension is .xlsx
-		outFileName += ".xlsx";
-		try
+		//If file can be created
+		if (initialCheck(directory, outFileName) == true)
 		{
-			//Create output File to write to
-			File outputFile = new File(directory, outFileName);
-			
-			//Create output Stream to do the writing
-			fileOut = new FileOutputStream(outputFile);
-			
-			//Create new sheet in workbook
-			Sheet sheet = wb.createSheet("Sheet1");
-			CreationHelper createHelper = wb.getCreationHelper();
+			//Create XLSX Style workbook
+			Workbook wb = new XSSFWorkbook();
+			FileOutputStream fileOut;
 
-			//Iterate through rows
-			for (int currentRow = 0; currentRow < spreadsheet.getRowCount(); currentRow++)
+			//Make sure file extension is .xlsx
+			outFileName += ".xlsx";
+			try
 			{
-				//Create a row in workbook
-				Row row = sheet.createRow(currentRow);
+				//Create output File to write to
+				File outputFile = new File(directory, outFileName);
 
-				//Get Row from DataFile
-				ArrayList<String> rowList = spreadsheet.getRow(currentRow);
-				
-				//Iterate through cells
-				for (int currentCell = 0; currentCell < rowList.size(); currentCell++)
+				//Create output Stream to do the writing
+				fileOut = new FileOutputStream(outputFile);
+
+				//Create new sheet in workbook
+				Sheet sheet = wb.createSheet("Sheet1");
+				CreationHelper createHelper = wb.getCreationHelper();
+
+				//Iterate through rows
+				for (int currentRow = 0; currentRow < spreadsheet.getRowCount(); currentRow++)
 				{
-					//Create cell in workbook
-					Cell cell = row.createCell(currentCell);
-					
-					//Write cell from datafile to workbook
-					cell.setCellValue(rowList.get(currentCell));
+					//Create a row in workbook
+					Row row = sheet.createRow(currentRow);
+
+					//Get Row from DataFile
+					ArrayList<String> rowList = spreadsheet.getRow(currentRow);
+
+					//Iterate through cells
+					for (int currentCell = 0; currentCell < rowList.size(); currentCell++)
+					{
+						//Create cell in workbook
+						Cell cell = row.createCell(currentCell);
+
+						//Write cell from datafile to workbook
+						cell.setCellValue(rowList.get(currentCell));
+					}
 				}
+
+				// Write the output to a file
+				wb.write(fileOut);
+
+				//Close File
+				fileOut.close();
 			}
+			catch (FileNotFoundException ex)
+			{
+				Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
 
-			// Write the output to a file
-			wb.write(fileOut);
-			
-			//Close File
-			fileOut.close();
+			}
+			catch (IOException ex)
+			{
+				Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+
+			}
 		}
-		catch (FileNotFoundException ex)
+		else
 		{
-			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
 
 		}
-		catch (IOException ex)
+
+	}
+
+	//Function used for creating a SmartXLS Workbook from a DataFile Object
+	public WorkBook sx_createWorkBook(DataFile spreadsheet) throws Exception
+	{
+		//Create workbook for storing data
+		WorkBook workBook;
+		workBook = new WorkBook();
+
+		//Find amount of rows in datafile
+		int amountRows = spreadsheet.getRowCount();
+
+		//Iterate through each row
+		for (int currentRow = 0; currentRow < amountRows; currentRow++)
 		{
-			Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			//Get the row from the Datafile object
+			ArrayList<String> row = spreadsheet.getRow(currentRow);
 
+			//Get the amount of columns in this row
+			int amountColumns = row.size();
+
+			//Iterate through each column
+			for (int currentCell = 0; currentCell < amountColumns; currentCell++)
+			{
+				//Get the cell from the current row
+				String cell = row.get(currentCell);
+				
+				//Add the cell to the workbook
+				workBook.setText(currentRow, currentCell, cell);
+			}
 		}
 
+		//Return the workbook
+		return workBook;
+	}
+
+	//Function used for writing a DataFile object to a Excel XLSX File
+	public void sx_writeFileXLSX(String directory, String outFileName, DataFile spreadsheet)
+	{
+		//If file can be created
+		if (initialCheck(directory, outFileName) == true)
+		{
+			try
+			{
+				//Create workbook from DataFile object
+				WorkBook workBook;
+				workBook = sx_createWorkBook(spreadsheet);
+
+				//Save workbook as XLSX
+				File outputFile = new File(directory, outFileName + ".xlsx");
+				workBook.writeXLSX(outputFile.getPath());
+			}
+			catch (Exception ex)
+			{
+				Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		else
+		{
+
+		}
+	}
+	
+	//Function used for writing a DataFile object to a TXT(Tab Delimited) File
+	public void sx_writeFileTXT(String directory, String outFileName, DataFile spreadsheet)
+	{
+		//If file can be created
+		if (initialCheck(directory, outFileName) == true)
+		{
+			try
+			{
+				//Create workbook from DataFile object
+				WorkBook workBook;
+				workBook = sx_createWorkBook(spreadsheet);
+
+				//Save workbook as TXT
+				File outputFile = new File(directory, outFileName + ".txt");
+				workBook.setCSVSeparator('\t');
+				workBook.writeCSV(outputFile.getPath());
+			}
+			catch (Exception ex)
+			{
+				Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		else
+		{
+
+		}
+	}
+	
+	//Function used for writing a DataFile object to a CSV(Comma Delimited) File
+	//Does not work!!
+	public void sx_writeFileCSV(String directory, String outFileName, DataFile spreadsheet)
+	{
+		//If file can be created
+		if (initialCheck(directory, outFileName) == true)
+		{
+			try
+			{
+				//Create workbook from DataFile object
+				WorkBook workBook;
+				workBook = sx_createWorkBook(spreadsheet);
+
+				//Save workbook as CSV
+				File outputFile = new File(directory, outFileName + ".csv");
+				workBook.setCSVSeparator(',');
+				workBook.writeXLSX(outputFile.getPath());
+			}
+			catch (Exception ex)
+			{
+				Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		else
+		{
+
+		}
+	}
+	
+	//Function used for writing a DataFile object to a Excel XLSX File
+	public void sx_writeFileXLS(String directory, String outFileName, DataFile spreadsheet)
+	{
+		//If file can be created
+		if (initialCheck(directory, outFileName) == true)
+		{
+			try
+			{
+				//Create workbook from DataFile object
+				WorkBook workBook;
+				workBook = sx_createWorkBook(spreadsheet);
+
+				//Save workbook as XLS
+				File outputFile = new File(directory, outFileName + ".xls");
+				workBook.write(outputFile.getPath());
+			}
+			catch (Exception ex)
+			{
+				Logger.getLogger(DataWriter.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		else
+		{
+
+		}
 	}
 
 	//Function for checking output fields and if file can be created
