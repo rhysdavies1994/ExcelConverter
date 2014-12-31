@@ -8,10 +8,10 @@
 
 <AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="750.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="excelconverter.view.PDFToolsViewController">
    <children>
-      <GridPane hgap="10.0" vgap="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+      <GridPane hgap="30.0" vgap="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
         <columnConstraints>
           <ColumnConstraints hgrow="ALWAYS" maxWidth="340.0" minWidth="10.0" percentWidth="60.0" prefWidth="328.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="245.0" minWidth="10.0" prefWidth="172.0" />
+          <ColumnConstraints hgrow="ALWAYS" maxWidth="245.0" minWidth="10.0" percentWidth="40.0" prefWidth="172.0" />
         </columnConstraints>
         <rowConstraints>
             <RowConstraints maxHeight="173.0" minHeight="10.0" prefHeight="29.0" vgrow="SOMETIMES" />
@@ -21,16 +21,60 @@
             <VBox spacing="20.0" GridPane.rowIndex="1">
                <children>
                   <ListView fx:id="inputList" layoutX="27.0" layoutY="54.0" prefHeight="285.0" prefWidth="266.0" VBox.vgrow="ALWAYS" />
-                  <HBox alignment="CENTER" layoutX="27.0" layoutY="353.0" spacing="10.0">
+                  <HBox alignment="CENTER" layoutX="27.0" layoutY="353.0" spacing="20.0">
                      <children>
                         <Button layoutX="27.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleInputBrowse" text="Add Files" />
-                        <Button alignment="CENTER" layoutX="153.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleInputBrowse" text="Remove" />
-                        <Button alignment="CENTER_RIGHT" layoutX="281.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleInputBrowse" text="Remove All" />
+                        <Button alignment="CENTER" layoutX="153.0" layoutY="353.0" mnemonicParsing="false" onAction="#removeSelectedItem" text="Remove" />
+                        <Button alignment="CENTER_RIGHT" layoutX="281.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleRemoveAll" text="Remove All" />
                      </children>
                   </HBox>
                </children>
             </VBox>
-            <Label alignment="CENTER" text="PDF Tools" GridPane.halignment="CENTER" />
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <Accordion VBox.vgrow="ALWAYS">
+                    <panes>
+                      <TitledPane alignment="CENTER" animated="false" text="PDF Counter">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox layoutX="62.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Button mnemonicParsing="false" text="Button" />
+                                       </children>
+                                    </VBox>
+                                 </children></AnchorPane>
+                        </content>
+                      </TitledPane>
+                      <TitledPane alignment="CENTER" animated="false" text="PDF Combiner">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Button" />
+                                 </children></AnchorPane>
+                        </content>
+                      </TitledPane>
+                      <TitledPane alignment="CENTER" animated="false" text="PDF Split Odd Pages">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Button" />
+                                 </children></AnchorPane>
+                        </content>
+                      </TitledPane>
+                    </panes>
+                  </Accordion>
+                  <HBox alignment="CENTER" spacing="10.0" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <children>
+                  <Label alignment="CENTER" text="Input PDF Files" />
+                  <Label alignment="CENTER" style="-fx-font-size: 10;" text="Drag and Drop" />
+               </children>
+            </VBox>
          </children>
       </GridPane>
    </children>
