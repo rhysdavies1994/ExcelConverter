@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
@@ -38,9 +39,29 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <VBox layoutX="62.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <VBox alignment="TOP_CENTER" layoutX="18.6" layoutY="19.6" prefHeight="223.0" prefWidth="251.0" spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <Button mnemonicParsing="false" text="Button" />
+                                          <VBox prefHeight="127.0" prefWidth="251.0" spacing="10.0">
+                                             <children>
+                                                <Label text="Output Folder" />
+                                                <TextField fx:id="countOutputFolder" VBox.vgrow="ALWAYS" />
+                                                <Button mnemonicParsing="false" onAction="#handleCountBrowse" text="Browse..." />
+                                             </children>
+                                          </VBox>
+                                          <VBox prefHeight="127.0" prefWidth="251.0" spacing="10.0">
+                                             <children>
+                                                <Label text="File Name" />
+                                                <TextField fx:id="countOutputName" VBox.vgrow="ALWAYS" />
+                                             </children>
+                                          </VBox>
+                                          <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                                             <children>
+                                                <Button alignment="BOTTOM_CENTER" mnemonicParsing="false" onAction="#handleCount" text="Count PDFs" textAlignment="CENTER" />
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="10.0" />
+                                             </padding>
+                                          </VBox>
                                        </children>
                                     </VBox>
                                  </children></AnchorPane>
@@ -50,8 +71,31 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                    <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Button" />
+                                    <VBox alignment="TOP_CENTER" prefHeight="223.0" prefWidth="251.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <VBox prefHeight="127.0" prefWidth="251.0" spacing="10.0">
+                                             <children>
+                                                <Label text="Output Folder" />
+                                                <TextField fx:id="combineOutputFolder" VBox.vgrow="ALWAYS" />
+                                                <Button mnemonicParsing="false" onAction="#handleCombineBrowse" text="Browse..." />
+                                             </children>
+                                          </VBox>
+                                          <VBox prefHeight="127.0" prefWidth="251.0" spacing="10.0">
+                                             <children>
+                                                <Label text="File Name" />
+                                                <TextField fx:id="combineOutputName" VBox.vgrow="ALWAYS" />
+                                             </children>
+                                          </VBox>
+                                          <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                                             <children>
+                                                <Button alignment="BOTTOM_CENTER" mnemonicParsing="false" onAction="#handleCombine" text="Combine PDFs" textAlignment="CENTER" />
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="10.0" />
+                                             </padding>
+                                          </VBox>
+                                       </children>
+                                    </VBox>
                                  </children></AnchorPane>
                         </content>
                       </TitledPane>
@@ -59,8 +103,31 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                    <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Button" />
+                                    <VBox alignment="TOP_CENTER" prefHeight="223.0" prefWidth="251.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <VBox prefHeight="127.0" prefWidth="251.0" spacing="10.0">
+                                             <children>
+                                                <Label text="Output Folder" />
+                                                <TextField fx:id="splitOddPageOutputFolder" VBox.vgrow="ALWAYS" />
+                                                <Button mnemonicParsing="false" onAction="#handleSplitOddPageBrowse" text="Browse..." />
+                                             </children>
+                                          </VBox>
+                                          <VBox prefHeight="127.0" prefWidth="251.0" spacing="10.0">
+                                             <children>
+                                                <Label text="File Name" />
+                                                <TextField fx:id="splitOddPageOutputName" VBox.vgrow="ALWAYS" />
+                                             </children>
+                                          </VBox>
+                                          <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                                             <children>
+                                                <Button alignment="BOTTOM_CENTER" mnemonicParsing="false" onAction="#handleSplitOddPages" text="Begin" textAlignment="CENTER" />
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="10.0" />
+                                             </padding>
+                                          </VBox>
+                                       </children>
+                                    </VBox>
                                  </children></AnchorPane>
                         </content>
                       </TitledPane>

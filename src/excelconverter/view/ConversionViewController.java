@@ -270,7 +270,7 @@ public class ConversionViewController
 								updateMessage("Reading File " + i + " of " + items.size());
 								String currentItem = items.get(i);
 
-								String extension = currentItem.substring(currentItem.lastIndexOf(".") + 1, currentItem.length());
+								String extension =  currentItem.substring(currentItem.lastIndexOf(".") + 1, currentItem.length()).toLowerCase();
 
 								//Check file type and read depending on type
 								switch (extension)

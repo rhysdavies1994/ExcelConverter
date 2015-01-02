@@ -256,7 +256,10 @@ public class DataWriter
 		//Create workbook for storing data
 		WorkBook workBook;
 		workBook = new WorkBook();
-
+		
+		workBook.insertSheets(0,1);
+		workBook.setSheet(0);
+		
 		//Find amount of rows in datafile
 		int amountRows = spreadsheet.getRowCount();
 

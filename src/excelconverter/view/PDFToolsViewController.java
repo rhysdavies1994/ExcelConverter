@@ -5,22 +5,37 @@
  */
 package excelconverter.view;
 
+import com.smartxls.WorkBook;
 import excelconverter.MainApp;
+import excelconverter.model.DataFile;
+import excelconverter.model.DataReader;
+import excelconverter.model.DataWriter;
+import excelconverter.model.PDFTools;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import org.controlsfx.dialog.Dialogs;
 
 public class PDFToolsViewController
 {
@@ -32,6 +47,30 @@ public class PDFToolsViewController
 
 	// Reference to the main application
 	private MainApp mainApp;
+
+	private PDFTools pdfTools;
+
+	private double completedProgressItems;
+	private double totalProgressItems;
+
+	//Class Fields for Count
+	private int totalCount = 0;
+	@FXML
+	private TextField countOutputFolder;
+	@FXML
+	private TextField countOutputName;
+
+	//Class Fields for Combine
+	@FXML
+	private TextField combineOutputFolder;
+	@FXML
+	private TextField combineOutputName;
+
+	//Class Fields for Split Odd Pages
+	@FXML
+	private TextField splitOddPageOutputFolder;
+	@FXML
+	private TextField splitOddPageOutputName;
 
 	@FXML
 	public void initialize()
@@ -50,6 +89,20 @@ public class PDFToolsViewController
 			}
 		});
 
+		pdfTools = new PDFTools();
+
+		//Set defaults for output textfields
+		countOutputName.setText("PDFCount");
+		countOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
+
+//		//Set defaults for output textfields
+//		combineOutputName.setText("CombinedPDFs");
+//		combineOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
+//
+//		//Set defaults for output textfields
+//		splitOddPageOutputName.setText("SplitPDF");
+//		splitOddPageOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
+
 	}
 
 	public void setMainApp(MainApp mainApp)
@@ -57,6 +110,349 @@ public class PDFToolsViewController
 		this.mainApp = mainApp;
 	}
 
+	//Function called when browse button is clicked for count output folder
+	@FXML
+	public void handleCountBrowse()
+	{
+		DirectoryChooser directoryChooser = new DirectoryChooser();
+
+		File selectedDirectory = directoryChooser.showDialog(mainApp.getPrimaryStage());
+
+		countOutputFolder.setText(selectedDirectory.getAbsolutePath());
+	}
+
+	//Function called when browse button is clicked for combine output folder
+	@FXML
+	public void handleCombineBrowse()
+	{
+		DirectoryChooser directoryChooser = new DirectoryChooser();
+
+		File selectedDirectory = directoryChooser.showDialog(mainApp.getPrimaryStage());
+
+		combineOutputFolder.setText(selectedDirectory.getAbsolutePath());
+	}
+
+	//Function called when browse button is clicked for split odd page output folder
+	@FXML
+	public void handleSplitOddPageBrowse()
+	{
+		DirectoryChooser directoryChooser = new DirectoryChooser();
+
+		File selectedDirectory = directoryChooser.showDialog(mainApp.getPrimaryStage());
+
+		splitOddPageOutputFolder.setText(selectedDirectory.getAbsolutePath());
+	}
+
+	public void handleCount()
+	{
+		completedProgressItems = 0;
+		totalProgressItems = 1;
+		ObservableList<String> items = inputList.getItems();
+
+		//Initialise Data Writer
+		DataWriter dataWriter = new DataWriter();
+
+		//Check if output fields are not empty and file can be created at location
+		boolean canCreateFile = true;
+		canCreateFile = dataWriter.initialCheck(countOutputFolder.getText(), countOutputName.getText());
+
+		//If atleast 1 input item and can create file, process it
+		if (items.size() > 0 && canCreateFile == true)
+		{
+			Service<Void> service = new Service<Void>()
+			{
+
+				@Override
+				protected Task<Void> createTask()
+				{
+					return new Task<Void>()
+					{
+
+						@Override
+						protected Void call()
+								throws InterruptedException
+						{
+							try
+							{
+								updateProgress(completedProgressItems, totalProgressItems);
+
+								updateMessage("Preparing to Count..");
+
+								totalProgressItems += inputFiles.size();
+
+								//Create workbook for storing data
+								DataFile spreadsheet = new DataFile();
+
+								//Start at first column and row and set headers
+								totalCount = 0;
+								int row = 0;
+								int column = 0;
+
+								ArrayList<String> headerRow = new ArrayList<String>();
+
+								headerRow.add("PDF Files");
+								headerRow.add("Page Count");
+
+								spreadsheet.addRow(headerRow);
+
+								for (String currentFileName : inputFiles)
+								{
+									ArrayList<String> currentRow = new ArrayList<String>();
+
+									updateMessage("Counting File " + spreadsheet.getRowCount() + " of " + inputFiles.size() + "\nTotal Pages: " + totalCount);
+									String directFileName = currentFileName.substring(currentFileName.lastIndexOf("\\") + 1, currentFileName.length());
+									System.out.println(directFileName);
+
+									//Start at first column in each row
+									column = 0;
+
+									//Add file name to first cell in row
+									currentRow.add(directFileName);
+									column++;
+
+									//Add amount of pages in pdf to second cell in row
+									int amountPages = pdfTools.count(currentFileName);
+									totalCount += amountPages;
+									String amountPagesString = String.valueOf(amountPages);
+									currentRow.add(amountPagesString);
+
+									//Increment the row count
+									spreadsheet.addRow(currentRow);
+									row++;
+
+									completedProgressItems++;
+									updateProgress(completedProgressItems, totalProgressItems);
+								}
+
+								//Add total to end of files
+								ArrayList<String> totalRow = new ArrayList<String>();
+								column = 0;
+								totalRow.add("Total");
+								column++;
+
+								//Add total count to end of files
+								String totalPages = String.valueOf(totalCount);
+								totalRow.add(totalPages);
+
+								spreadsheet.addRow(totalRow);
+
+								System.out.println("Finished Reading Files");
+
+								//Write workbook to output file
+								updateMessage("Writing Data to File");
+
+								dataWriter.writeFileTXT(countOutputFolder.getText(), countOutputName.getText(), spreadsheet);
+
+								completedProgressItems++;
+								updateProgress(completedProgressItems, totalProgressItems);
+
+							}
+							catch (Exception ex)
+							{
+								Logger.getLogger(PDFToolsViewController.class.getName()).log(Level.SEVERE, null, ex);
+							}
+
+							return null;
+						}
+					};
+				}
+			};
+			Dialogs.create()
+					.owner(mainApp.getPrimaryStage())
+					.title("Progress Dialog")
+					.masthead("Counting Files")
+					.showWorkerProgress(service);
+
+			service.setOnSucceeded(new EventHandler<WorkerStateEvent>()
+			{
+				public void handle(WorkerStateEvent event)
+				{
+					Platform.runLater(new Runnable()
+					{
+						public void run()
+						{
+							Dialogs.create()
+									.owner(mainApp.getPrimaryStage())
+									.title("Completed")
+									.masthead("PDF Files have been counted")
+									.message("Total Pages: " + totalCount + "\n\nYou can find the breakdown at :\n" + countOutputFolder.getText() + "\\" + countOutputName.getText()+".txt")
+									.showInformation();
+						}
+					});
+				}
+			});
+
+			service.start();
+		}
+		else if (canCreateFile && items.size() <= 0)
+		{
+
+			Dialogs.create()
+					.title("No Input Files")
+					.masthead("There were no files selected")
+					.message("1. Click Add Files, or Drag 'n Drop into Input Files\n2. Click Count PDF's")
+					.showError();
+
+		}
+	}
+
+	public void handleCombine()
+	{
+		completedProgressItems = 0;
+		totalProgressItems = 1;
+		ObservableList<String> items = inputList.getItems();
+
+		//Initialise Data Writer
+		DataWriter dataWriter = new DataWriter();
+
+		//Check if output fields are not empty and file can be created at location
+		boolean canCreateFile = true;
+		canCreateFile = dataWriter.initialCheck(combineOutputFolder.getText(), combineOutputName.getText());
+
+		//If atleast 1 input item and can create file, process it
+		if (items.size() > 0 && canCreateFile == true)
+		{
+			Service<Void> service = new Service<Void>()
+			{
+
+				@Override
+				protected Task<Void> createTask()
+				{
+					return new Task<Void>()
+					{
+
+						@Override
+						protected Void call()
+								throws InterruptedException
+						{
+							
+							updateMessage("Combining PDF Files.. This may take a minute");
+							
+							pdfTools.combine(combineOutputFolder.getText(), combineOutputName.getText(),items);
+
+							completedProgressItems++;
+							updateProgress(completedProgressItems, totalProgressItems);
+							
+							return null;
+						}
+					};
+				}
+			};
+			Dialogs.create()
+					.owner(mainApp.getPrimaryStage())
+					.title("Progress Dialog")
+					.masthead("Combining Files")
+					.showWorkerProgress(service);
+
+			service.setOnSucceeded(new EventHandler<WorkerStateEvent>()
+			{
+				public void handle(WorkerStateEvent event)
+				{
+					Platform.runLater(new Runnable()
+					{
+						public void run()
+						{
+							Dialogs.create()
+									.owner(mainApp.getPrimaryStage())
+									.title("Completed")
+									.masthead("PDF Files have been Combined")
+									.message("You can find the combined file at: \n"+ combineOutputFolder.getText()+"\\"+combineOutputName.getText()+".pdf")
+									.showInformation();
+						}
+					});
+				}
+			});
+
+			service.start();
+		}
+		else if (canCreateFile && items.size() <= 0)
+		{
+
+			Dialogs.create()
+					.title("No Input Files")
+					.masthead("There were no files selected")
+					.message("1. Click Add Files, or Drag 'n Drop into Input Files\n2. Click Count PDF's")
+					.showError();
+
+		}
+	}
+	
+	public void handleSplitOddPages()
+	{
+		completedProgressItems = 0;
+		totalProgressItems = 1;
+		ObservableList<String> items = inputList.getItems();
+
+		//Initialise Data Writer
+		DataWriter dataWriter = new DataWriter();
+
+		//Check if output fields are not empty and file can be created at location
+		boolean canCreateFile = true;
+		canCreateFile = dataWriter.initialCheck(combineOutputFolder.getText(), combineOutputName.getText());
+
+		//If atleast 1 input item and can create file, process it
+		if (items.size() > 0 && canCreateFile == true)
+		{
+			Service<Void> service = new Service<Void>()
+			{
+
+				@Override
+				protected Task<Void> createTask()
+				{
+					return new Task<Void>()
+					{
+
+						@Override
+						protected Void call()
+								throws InterruptedException
+						{
+							
+
+							return null;
+						}
+					};
+				}
+			};
+			Dialogs.create()
+					.owner(mainApp.getPrimaryStage())
+					.title("Progress Dialog")
+					.masthead("Combining Files")
+					.showWorkerProgress(service);
+
+			service.setOnSucceeded(new EventHandler<WorkerStateEvent>()
+			{
+				public void handle(WorkerStateEvent event)
+				{
+					Platform.runLater(new Runnable()
+					{
+						public void run()
+						{
+							Dialogs.create()
+									.owner(mainApp.getPrimaryStage())
+									.title("Completed")
+									.masthead("PDF Files have been Combined")
+									.message("You can find the combined file at: \n")
+									.showInformation();
+						}
+					});
+				}
+			});
+
+			service.start();
+		}
+		else if (canCreateFile && items.size() <= 0)
+		{
+
+			Dialogs.create()
+					.title("No Input Files")
+					.masthead("There were no files selected")
+					.message("1. Click Add Files, or Drag 'n Drop into Input Files\n2. Click Count PDF's")
+					.showError();
+
+		}
+	}
+	
+	
 	public void initializeDragAndDrop()
 	{
 		//Drag and Drop Files to add to input list
@@ -111,7 +507,7 @@ public class PDFToolsViewController
 
 			// Set extension filter
 			FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
-					"Data files", "*.txt", "*.csv", "*.xls", "*.xlsx");
+					"PDF Files", "*.pdf");
 			fileChooser.getExtensionFilters().add(extFilter);
 
 			//Select multiple files for import
