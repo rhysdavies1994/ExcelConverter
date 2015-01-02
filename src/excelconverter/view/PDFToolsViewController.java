@@ -95,13 +95,13 @@ public class PDFToolsViewController
 		countOutputName.setText("PDFCount");
 		countOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
 
-//		//Set defaults for output textfields
-//		combineOutputName.setText("CombinedPDFs");
-//		combineOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
-//
-//		//Set defaults for output textfields
-//		splitOddPageOutputName.setText("SplitPDF");
-//		splitOddPageOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
+		//Set defaults for output textfields
+		combineOutputName.setText("CombinedPDFs");
+		combineOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
+
+		//Set defaults for output textfields
+		splitOddPageOutputName.setText("SplitPDF");
+		splitOddPageOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
 
 	}
 
