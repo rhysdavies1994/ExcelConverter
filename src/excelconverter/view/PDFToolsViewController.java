@@ -127,6 +127,8 @@ public class PDFToolsViewController
 		deleteOriginalCheckbox.setSelected(true);
 		processedFiles=0;
 		totalFiles=0;
+		
+		pdfPrograms.setExpandedPane(countPane);
 
 	}
 
