@@ -32,9 +32,11 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -57,6 +59,16 @@ public class PDFToolsViewController
 
 	private double completedProgressItems;
 	private double totalProgressItems;
+	
+	@FXML
+	private Accordion pdfPrograms;
+	
+	@FXML
+	private TitledPane countPane;
+	@FXML
+	private TitledPane combinePane;
+	@FXML
+	private TitledPane splitOddPagesPane;
 
 	//Class Fields for Count
 	private int totalCount = 0;

@@ -33,9 +33,9 @@
             </VBox>
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
-                  <Accordion VBox.vgrow="ALWAYS">
+                  <Accordion fx:id="pdfPrograms" VBox.vgrow="ALWAYS">
                     <panes>
-                      <TitledPane alignment="CENTER" animated="false" text="PDF Counter">
+                      <TitledPane fx:id="countPane" alignment="CENTER" animated="false" text="PDF Counter">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -67,7 +67,7 @@
                                  </children></AnchorPane>
                         </content>
                       </TitledPane>
-                      <TitledPane alignment="CENTER" animated="false" text="PDF Combiner">
+                      <TitledPane fx:id="combinePane" alignment="CENTER" animated="false" text="PDF Combiner">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -99,7 +99,7 @@
                                  </children></AnchorPane>
                         </content>
                       </TitledPane>
-                      <TitledPane alignment="CENTER" animated="false" text="PDF Split Odd Pages">
+                      <TitledPane fx:id="splitOddPagesPane" alignment="CENTER" animated="false" text="PDF Split Odd Pages">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
