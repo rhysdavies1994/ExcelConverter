@@ -12,6 +12,10 @@ import excelconverter.model.DataReader;
 import excelconverter.model.DataWriter;
 import excelconverter.model.PDFTools;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +75,8 @@ public class PDFToolsViewController
 	private TextField splitOddPageOutputFolder;
 	@FXML
 	private TextField splitOddPageOutputName;
+	private int processedFiles;
+	private int totalFiles;
 
 	@FXML
 	public void initialize()
@@ -102,6 +108,8 @@ public class PDFToolsViewController
 		//Set defaults for output textfields
 		splitOddPageOutputName.setText("SplitPDF");
 		splitOddPageOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
+		processedFiles=0;
+		totalFiles=0;
 
 	}
 
@@ -275,7 +283,7 @@ public class PDFToolsViewController
 									.owner(mainApp.getPrimaryStage())
 									.title("Completed")
 									.masthead("PDF Files have been counted")
-									.message("Total Pages: " + totalCount + "\n\nYou can find the breakdown at :\n" + countOutputFolder.getText() + "\\" + countOutputName.getText()+".txt")
+									.message("Total Pages: " + totalCount + "\n\nYou can find the breakdown at :\n" + countOutputFolder.getText() + "\\" + countOutputName.getText() + ".txt")
 									.showInformation();
 						}
 					});
@@ -298,6 +306,7 @@ public class PDFToolsViewController
 
 	public void handleCombine()
 	{
+		
 		completedProgressItems = 0;
 		totalProgressItems = 1;
 		ObservableList<String> items = inputList.getItems();
@@ -325,14 +334,14 @@ public class PDFToolsViewController
 						protected Void call()
 								throws InterruptedException
 						{
-							
+
 							updateMessage("Combining PDF Files.. This may take a minute");
-							
-							pdfTools.combine(combineOutputFolder.getText(), combineOutputName.getText(),items);
+
+							pdfTools.combine(combineOutputFolder.getText(), combineOutputName.getText(), items);
 
 							completedProgressItems++;
 							updateProgress(completedProgressItems, totalProgressItems);
-							
+
 							return null;
 						}
 					};
@@ -356,7 +365,7 @@ public class PDFToolsViewController
 									.owner(mainApp.getPrimaryStage())
 									.title("Completed")
 									.masthead("PDF Files have been Combined")
-									.message("You can find the combined file at: \n"+ combineOutputFolder.getText()+"\\"+combineOutputName.getText()+".pdf")
+									.message("You can find the combined file at: \n" + combineOutputFolder.getText() + "\\" + combineOutputName.getText() + ".pdf")
 									.showInformation();
 						}
 					});
@@ -376,9 +385,11 @@ public class PDFToolsViewController
 
 		}
 	}
-	
+
 	public void handleSplitOddPages()
 	{
+		processedFiles=0;
+		totalFiles=0;
 		completedProgressItems = 0;
 		totalProgressItems = 1;
 		ObservableList<String> items = inputList.getItems();
@@ -406,7 +417,69 @@ public class PDFToolsViewController
 						protected Void call()
 								throws InterruptedException
 						{
-							
+							int currentFileIndex = 0;
+							totalProgressItems = inputFiles.size();
+							totalFiles=(int)totalProgressItems;
+							for (String currentFileName : inputFiles)
+							{
+								updateMessage("Splitting File "+((int)completedProgressItems+1)+" of "+(int)totalProgressItems);
+								updateProgress(completedProgressItems, totalProgressItems);
+								
+								String extension = currentFileName.substring(currentFileName.lastIndexOf(".") + 1, currentFileName.length()).toLowerCase();
+								if (extension.equals("pdf"))
+								{
+									FileInputStream inputStreamOrig = null;
+									FileInputStream inputStreamNew = null;
+									int amountPages = amountPages = pdfTools.count(currentFileName);
+									
+
+									if (amountPages > 1 && amountPages % 2 == 0)
+									{
+										//even
+									}
+									else if(amountPages > 1)
+									{
+										//odd
+
+										try
+										{
+											inputStreamOrig = new FileInputStream(currentFileName);
+
+											String outputNameOrig = currentFileName.substring(0, currentFileName.length() - 4) + "_Original.pdf";
+											FileOutputStream outputStreamOrig = new FileOutputStream(outputNameOrig);
+
+											pdfTools.split_itext(inputStreamOrig, outputStreamOrig, 1, amountPages - 1);
+
+											inputStreamNew = new FileInputStream(currentFileName);
+
+											String outputNameNew = currentFileName.substring(0, currentFileName.length() - 4) + "_SplitPage.pdf";
+											FileOutputStream outputStreamNew = new FileOutputStream(outputNameNew);
+
+											pdfTools.split_itext(inputStreamNew, outputStreamNew, amountPages, amountPages);
+
+											inputStreamOrig.close();
+											inputStreamNew.close();
+											
+											processedFiles++;
+											
+											
+											
+										}
+										catch (FileNotFoundException ex)
+										{
+											Logger.getLogger(PDFToolsViewController.class.getName()).log(Level.SEVERE, null, ex);
+										}
+										catch (IOException ex)
+										{
+											Logger.getLogger(PDFToolsViewController.class.getName()).log(Level.SEVERE, null, ex);
+										}
+									}
+
+								}
+								
+								completedProgressItems++;
+								
+							}
 
 							return null;
 						}
@@ -416,7 +489,7 @@ public class PDFToolsViewController
 			Dialogs.create()
 					.owner(mainApp.getPrimaryStage())
 					.title("Progress Dialog")
-					.masthead("Combining Files")
+					.masthead("Splitting Last Page for Odd Files")
 					.showWorkerProgress(service);
 
 			service.setOnSucceeded(new EventHandler<WorkerStateEvent>()
@@ -430,8 +503,8 @@ public class PDFToolsViewController
 							Dialogs.create()
 									.owner(mainApp.getPrimaryStage())
 									.title("Completed")
-									.masthead("PDF Files have been Combined")
-									.message("You can find the combined file at: \n")
+									.masthead("Splitting Finished")
+									.message(processedFiles+"of "+totalFiles+"  files have been split, You can find them in original folder")
 									.showInformation();
 						}
 					});
@@ -451,8 +524,7 @@ public class PDFToolsViewController
 
 		}
 	}
-	
-	
+
 	public void initializeDragAndDrop()
 	{
 		//Drag and Drop Files to add to input list
