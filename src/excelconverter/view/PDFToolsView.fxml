@@ -114,8 +114,9 @@
                                           </VBox>
                                           <VBox prefHeight="127.0" prefWidth="251.0" spacing="10.0">
                                              <children>
-                                                <Label text="File Name" />
-                                                <TextField fx:id="splitOddPageOutputName" VBox.vgrow="ALWAYS" />
+                                                <Label text="Processing Options" />
+                                                <CheckBox fx:id="deleteOriginalCheckbox" mnemonicParsing="false" text="Delete Original File" />
+                                                <CheckBox fx:id="outputOriginalCheckbox" mnemonicParsing="false" text="Send Output to Original Folder" />
                                              </children>
                                           </VBox>
                                           <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">

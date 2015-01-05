@@ -77,7 +77,13 @@ public class PDFTools
 
 		for (String currentFileName : fileNames)
 		{
-			pdfMerger.addSource(currentFileName);
+			File f = new File(currentFileName);
+			if(f.exists())
+			{
+				pdfMerger.addSource(currentFileName);
+			}
+			
+			
 		}
 
 		pdfMerger.setDestinationFileName(outputFolderName + "\\" + outputFileName + ".pdf");
@@ -164,6 +170,7 @@ public class PDFTools
 			}
 			catch (FileNotFoundException ex)
 			{
+				System.out.println("File doesnt exist");
 				Logger.getLogger(PDFTools.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			catch (IOException ex)

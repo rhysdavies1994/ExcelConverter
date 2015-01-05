@@ -32,6 +32,7 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
@@ -74,7 +75,10 @@ public class PDFToolsViewController
 	@FXML
 	private TextField splitOddPageOutputFolder;
 	@FXML
-	private TextField splitOddPageOutputName;
+	private CheckBox outputOriginalCheckbox;
+	@FXML
+	private CheckBox deleteOriginalCheckbox;
+	
 	private int processedFiles;
 	private int totalFiles;
 
@@ -106,8 +110,9 @@ public class PDFToolsViewController
 		combineOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
 
 		//Set defaults for output textfields
-		splitOddPageOutputName.setText("SplitPDF");
 		splitOddPageOutputFolder.setText(System.getProperty("user.home") + "\\Desktop");
+		outputOriginalCheckbox.setSelected(true);
+		deleteOriginalCheckbox.setSelected(true);
 		processedFiles=0;
 		totalFiles=0;
 
@@ -219,7 +224,7 @@ public class PDFToolsViewController
 									column++;
 
 									//Add amount of pages in pdf to second cell in row
-									int amountPages = pdfTools.count(currentFileName);
+									int amountPages = pdfTools.count_itext(currentFileName);
 									totalCount += amountPages;
 									String amountPagesString = String.valueOf(amountPages);
 									currentRow.add(amountPagesString);
@@ -422,7 +427,7 @@ public class PDFToolsViewController
 							totalFiles=(int)totalProgressItems;
 							for (String currentFileName : inputFiles)
 							{
-								updateMessage("Splitting File "+((int)completedProgressItems+1)+" of "+(int)totalProgressItems);
+								updateMessage("Processing File "+((int)completedProgressItems+1)+" of "+(int)totalProgressItems);
 								updateProgress(completedProgressItems, totalProgressItems);
 								
 								String extension = currentFileName.substring(currentFileName.lastIndexOf(".") + 1, currentFileName.length()).toLowerCase();
@@ -430,7 +435,24 @@ public class PDFToolsViewController
 								{
 									FileInputStream inputStreamOrig = null;
 									FileInputStream inputStreamNew = null;
-									int amountPages = amountPages = pdfTools.count(currentFileName);
+									int amountPages = amountPages = pdfTools.count_itext(currentFileName);
+									
+									String actualFileName = currentFileName.substring(currentFileName.lastIndexOf("\\") + 1, currentFileName.length());
+									System.out.println(actualFileName);
+									String outputFolderName;
+									
+									if(outputOriginalCheckbox.isSelected())
+									{
+										
+										outputFolderName=currentFileName.substring(0,currentFileName.lastIndexOf("\\"));
+										System.out.println(outputFolderName);
+									}
+									else
+									{
+										
+										outputFolderName=splitOddPageOutputFolder.getText();
+									}
+									
 									
 
 									if (amountPages > 1 && amountPages % 2 == 0)
@@ -445,14 +467,15 @@ public class PDFToolsViewController
 										{
 											inputStreamOrig = new FileInputStream(currentFileName);
 
-											String outputNameOrig = currentFileName.substring(0, currentFileName.length() - 4) + "_Original.pdf";
+											String outputNameOrig = outputFolderName+"\\"+actualFileName.substring(0, actualFileName.length() - 4) + "_Original.pdf";
+											System.out.println(outputNameOrig);
 											FileOutputStream outputStreamOrig = new FileOutputStream(outputNameOrig);
 
 											pdfTools.split_itext(inputStreamOrig, outputStreamOrig, 1, amountPages - 1);
 
 											inputStreamNew = new FileInputStream(currentFileName);
 
-											String outputNameNew = currentFileName.substring(0, currentFileName.length() - 4) + "_SplitPage.pdf";
+											String outputNameNew = outputFolderName+"\\"+actualFileName.substring(0, actualFileName.length() - 4) + "_LastPage.pdf";
 											FileOutputStream outputStreamNew = new FileOutputStream(outputNameNew);
 
 											pdfTools.split_itext(inputStreamNew, outputStreamNew, amountPages, amountPages);
@@ -460,7 +483,14 @@ public class PDFToolsViewController
 											inputStreamOrig.close();
 											inputStreamNew.close();
 											
+											
 											processedFiles++;
+											
+											if(deleteOriginalCheckbox.isSelected())
+											{
+												File deleteFile = new File(currentFileName);
+												deleteFile.delete();
+											}
 											
 											
 											
@@ -480,7 +510,7 @@ public class PDFToolsViewController
 								completedProgressItems++;
 								
 							}
-
+							
 							return null;
 						}
 					};
@@ -504,7 +534,7 @@ public class PDFToolsViewController
 									.owner(mainApp.getPrimaryStage())
 									.title("Completed")
 									.masthead("Splitting Finished")
-									.message(processedFiles+"of "+totalFiles+"  files have been split, You can find them in original folder")
+									.message(processedFiles+" of "+totalFiles+"  files have been split, You can find them in original folder")
 									.showInformation();
 						}
 					});
