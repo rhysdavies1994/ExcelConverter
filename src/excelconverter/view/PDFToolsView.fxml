@@ -116,7 +116,7 @@
                                              <children>
                                                 <Label text="Processing Options" />
                                                 <CheckBox fx:id="deleteOriginalCheckbox" mnemonicParsing="false" text="Delete Original File" />
-                                                <CheckBox fx:id="outputOriginalCheckbox" mnemonicParsing="false" text="Send Output to Original Folder" />
+                                                <CheckBox fx:id="outputOriginalCheckbox" mnemonicParsing="false" text="Send Files to Input Folder" />
                                              </children>
                                           </VBox>
                                           <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
